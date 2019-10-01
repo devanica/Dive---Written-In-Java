@@ -2,19 +2,16 @@ package com.example.myapplication.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.PopupMenu;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.myapplication.R;
 import com.example.myapplication.model.Track;
-
 import java.util.ArrayList;
 
 public class TrackAdapter extends BaseAdapter {
@@ -57,22 +54,31 @@ public class TrackAdapter extends BaseAdapter {
 
         final Track track = (Track) getItem(i);
         trackViewHolder.track_name.setText(track.getTrackName());
+        trackViewHolder.artist_name.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendMessage();
+            }
+        });
         trackViewHolder.artist_name.setText(track.getArtistName());
         trackViewHolder.favourites_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putLong("track", track.getId());
-                editor.putString("track_name", track.getTrackName());
-                editor.putString("artist_name", track.getArtistName());
-                editor.putString("track_duration", track.getTrackDuration());
-                editor.apply();
 
                 //showPopup(view);
             }
         });
         return view;
+    }
+
+    // Send an Intent with an action named "custom-event-name". The Intent sent should
+    // be received by the ReceiverActivity.
+    private void sendMessage() {
+        Log.d("sender", "Broadcasting message");
+        Intent intent = new Intent("track");
+        // You can also include some extra data.
+        intent.putExtra("message", "This is my message!");
+        LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
     }
 
     /*private void showPopup(View view){
