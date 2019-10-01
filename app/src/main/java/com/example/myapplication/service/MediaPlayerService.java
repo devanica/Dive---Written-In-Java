@@ -70,6 +70,7 @@ public class MediaPlayerService extends Service implements
                 artistName_bottom.setText(track.getArtistName());
                 trackDuration_bottom.setText(track.getTrackDuration());
                 // Get track info
+
                 editor = sharedPreferences.edit();
                 editor.putString("trackName", track.getTrackName());
                 editor.putString("trackArtist", track.getArtistName());
