@@ -24,8 +24,9 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_recent"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/title_recent">
+        android:layout_height="100dp"
+        android:layout_below="@+id/title_recent"
+        tools:listitem="@layout/recent_track">
     </androidx.recyclerview.widget.RecyclerView>
 
     <TextView
@@ -38,8 +39,9 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_favorite"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/title_favorite">
+        android:layout_height="100dp"
+        android:layout_below="@+id/title_favorite"
+        tools:listitem="@layout/recent_track">
     </androidx.recyclerview.widget.RecyclerView>
 
     <TextView
@@ -49,11 +51,11 @@
         android:layout_below="@id/recycler_favorite">
     </TextView>
 
-    <androidx.recyclerview.widget.RecyclerView
+    <ListView
         android:id="@+id/recycler_tracks"
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:layout_below="@+id/title_tracks">
-    </androidx.recyclerview.widget.RecyclerView>
+    </ListView>
 
 </RelativeLayout>

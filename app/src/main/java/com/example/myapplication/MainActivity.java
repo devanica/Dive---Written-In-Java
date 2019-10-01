@@ -1,31 +1,61 @@
 package com.example.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
-
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
-import android.content.Intent;
+import android.content.ContentUris;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ListView;
 import android.widget.Toast;
-
+import com.example.myapplication.adapter.RecentTrackAdapter;
+import com.example.myapplication.adapter.TrackAdapter;
 import com.example.myapplication.model.Track;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity  implements
-        Filterable {
+public class MainActivity extends AppCompatActivity implements Filterable {
 
-    private ArrayList<Track> trackList;
-    private ArrayList<Track> filteredList;
+    private ArrayList<Track> favoriteList = new ArrayList<>();
+    private ArrayList<Track> recentList = new ArrayList<>();
+    private ArrayList<Track> trackList = new ArrayList<>();
+    private ArrayList<Track> filteredList = new ArrayList<>();
+
+    private RecentTrackAdapter recentTrackAdapter;
+    private TrackAdapter trackAdapter;
+
+    private RecyclerView recentRecycler;
+    private RecyclerView favoriteRecycler;
+    private ListView trackRecycler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        recentRecycler = findViewById(R.id.recycler_recent);
+        favoriteRecycler = findViewById(R.id.recycler_favorite);
+        trackRecycler = findViewById(R.id.recycler_tracks);
+        // Adapter for recentList.
+        recentRecycler.setLayoutManager(new GridLayoutManager(getApplicationContext(), 3,
+                                        GridLayoutManager.HORIZONTAL, false));
+        recentTrackAdapter = new RecentTrackAdapter(recentList, getApplicationContext());
+        recentRecycler.setAdapter(recentTrackAdapter);
+        // Adapter for favoriteList.
+        favoriteRecycler.setLayoutManager(new GridLayoutManager(getApplicationContext(), 3,
+                                        GridLayoutManager.HORIZONTAL, false));
+        recentTrackAdapter = new RecentTrackAdapter(favoriteList, getApplicationContext());
+        favoriteRecycler.setAdapter(recentTrackAdapter);
+        // Adapter for trackList/filteredList.
+        getTracksFromStorage();
+        trackAdapter = new TrackAdapter(getApplicationContext(), trackList);
+        trackRecycler.setAdapter(trackAdapter);
     }
 
     // Filter for search interface
@@ -97,5 +127,12 @@ public class MainActivity extends AppCompatActivity  implements
             Toast.makeText(getApplicationContext(), "You've got 0 tracks", Toast.LENGTH_SHORT).show();
         }
     }
+
+    private void deleteTrack(int id){
+        Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
+        getApplicationContext().getContentResolver().delete(uri, null, null);
+        onBackPressed();
+    }
+
 
 }

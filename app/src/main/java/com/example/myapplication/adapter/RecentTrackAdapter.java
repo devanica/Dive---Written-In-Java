@@ -7,19 +7,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.myapplication.R;
 import com.example.myapplication.model.Track;
-
-import java.util.List;
+import java.util.ArrayList;
 
 public class RecentTrackAdapter extends RecyclerView.Adapter<RecentTrackHolder> {
 
-    private List<Track> albums;
+    private ArrayList<Track> tracks;
     private Context context;
 
-    public RecentTrackAdapter(List<Track> recentTrackItems, Context context) {
-        this.albums = recentTrackItems;
+    public RecentTrackAdapter(ArrayList<Track> recentTrackItems, Context context) {
+        this.tracks = recentTrackItems;
         this.context = context;
     }
 
@@ -32,12 +30,12 @@ public class RecentTrackAdapter extends RecyclerView.Adapter<RecentTrackHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull RecentTrackHolder holder, int position) {
-        holder.recent_TrackName.setText(albums.get(position).getTrackName());
-        holder.recent_ArtistName.setText(albums.get(position).getArtistName());
+        holder.recent_TrackName.setText(tracks.get(position).getTrackName());
+        holder.recent_ArtistName.setText(tracks.get(position).getArtistName());
     }
 
     @Override
     public int getItemCount() {
-        return this.albums.size();
+        return this.tracks.size();
     }
 }

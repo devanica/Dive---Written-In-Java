@@ -12,7 +12,7 @@ public class RecentTrackHolder  extends RecyclerView.ViewHolder {
 
     public RecentTrackHolder(@NonNull View itemView) {
         super(itemView);
-        //recent_TrackName = itemView.findViewById(R.id.recent_track_name);
-        //recent_ArtistName = itemView.findViewById(R.id.recent_artist_name);
+        recent_TrackName = itemView.findViewById(R.id.recent_track_name);
+        recent_ArtistName = itemView.findViewById(R.id.recent_artist_name);
     }
 }
