@@ -59,7 +59,7 @@ public class MediaPlayerService extends Service implements
         Log.v("track_registered","broadcast registered");
     }
 
-    private void triggerNotificationChannelOne(View view){
+    private void triggerNotificationChannelOne(){
         // here find strings from track info to be set in notification instead of title and content
 
         Intent intent = new Intent(this, MainActivity.class);
@@ -125,6 +125,7 @@ public class MediaPlayerService extends Service implements
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
         player.start();
+        triggerNotificationChannelOne();
         Log.v("player","start");
     }
 
