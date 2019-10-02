@@ -96,27 +96,25 @@ public class MainActivity extends AppCompatActivity implements Filterable {
         //IN ORDER TO SEND DATA BETWEEN SERVICE AND ACTIVITIES SERVICE NEEDS TO BE CONNECTED TO THE ACTIVITY
         //AND THIS IS HOW IT'S DONE.
 
-        WeakReference<Context> contextReference;
+        Context contextReference;
 
-        public Connection(Context context) {
-            contextReference = new WeakReference<>(context);
+        public Connection(Context contextReference) {
+            this.contextReference = contextReference;
         }
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            Context context = contextReference.get();
-            if (context != null) {
-                ((MainActivity) context).isBound = true;
-                Toast.makeText(context, "Service Connected", Toast.LENGTH_SHORT).show();
+            if (contextReference != null) {
+                ((MainActivity) contextReference).isBound = true;
+                Toast.makeText(contextReference, "Service Connected", Toast.LENGTH_SHORT).show();
             }
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            Context context = contextReference.get();
-            if (context != null) {
-                ((MainActivity) context).isBound = false;
-                Toast.makeText(context, "Service Disconnected", Toast.LENGTH_SHORT).show();
+            if (contextReference != null) {
+                ((MainActivity) contextReference).isBound = false;
+                Toast.makeText(contextReference, "Service Disconnected", Toast.LENGTH_SHORT).show();
             }
         }
     }
