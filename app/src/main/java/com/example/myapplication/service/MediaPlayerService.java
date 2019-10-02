@@ -44,7 +44,6 @@ public class MediaPlayerService extends Service implements
         // with actions named "sent_track".
         //player = new MediaPlayer();
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(onTrackSelect, new IntentFilter("sent_track"));
-        Toast.makeText(getApplicationContext(), "mps onCreate", Toast.LENGTH_SHORT).show();
         Log.v("track_registered","broadcast registered");
     }
 

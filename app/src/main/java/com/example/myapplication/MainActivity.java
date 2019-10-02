@@ -49,13 +49,15 @@ public class MainActivity extends AppCompatActivity implements Filterable {
     private RecyclerView favoriteRecycler;
     private RecyclerView trackRecycler;
 
-    public Messenger mMessenger;
+    private Connection connection;
     public boolean isBound = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        connection = new Connection(this);
 
         recentRecycler = findViewById(R.id.recycler_recent);
         favoriteRecycler = findViewById(R.id.recycler_favorite);
@@ -88,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements Filterable {
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(localIntent);
             }
         });
-        bindService(new Intent(this, MediaPlayerService.class), new Connection(this), BIND_AUTO_CREATE);
+        bindService(new Intent(this, MediaPlayerService.class), connection, BIND_AUTO_CREATE);
     }
 
     public static class Connection implements ServiceConnection {
@@ -193,6 +195,12 @@ public class MainActivity extends AppCompatActivity implements Filterable {
         Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
         getApplicationContext().getContentResolver().delete(uri, null, null);
         onBackPressed();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(connection);
     }
 
 }
