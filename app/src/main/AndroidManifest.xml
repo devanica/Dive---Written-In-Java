@@ -28,6 +28,8 @@
         </activity>
 
         <service android:name=".service.MediaPlayerService" />
+        <receiver android:name=".NotificationReceiver">
+        </receiver>
     </application>
 
 </manifest>

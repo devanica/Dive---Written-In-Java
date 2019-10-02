@@ -19,6 +19,7 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.myapplication.MainActivity;
+import com.example.myapplication.NotificationReceiver;
 import com.example.myapplication.R;
 import com.example.myapplication.model.Track;
 import java.io.IOException;
@@ -61,12 +62,23 @@ public class MediaPlayerService extends Service implements
     private void triggerNotificationChannelOne(View view){
         // here find strings from track info to be set in notification instead of title and content
 
+        Intent intent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+        Intent broadcastIntent = new Intent(this, NotificationReceiver.class);
+        broadcastIntent.putExtra("track", track);
+        PendingIntent actionIntent = PendingIntent.getBroadcast(this, 0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
         Notification notification = new NotificationCompat.Builder(this, NOTIF_CHANNEL_ID)
                 .setContentTitle("Dive")
                 .setContentText(track.getTrackName())
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
+                .setOnlyAlertOnce(true)
+                .addAction(R.drawable.ic_launcher_foreground, "something", actionIntent)
                 .build();
         notificationManagerCompat.notify(1, notification);
     }
