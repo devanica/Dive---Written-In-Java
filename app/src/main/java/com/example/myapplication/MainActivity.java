@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,6 +20,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Filter;
 import android.widget.Filterable;
@@ -76,7 +78,16 @@ public class MainActivity extends AppCompatActivity implements Filterable {
         trackAdapter.setOnTrackSelectListener(new TrackAdapter.onTrackSelectListener() {
             @Override
             public void onTrackSelect(View view, int position, Track track) {
-                if (isBound) {
+                // Send an Intent with an action named "track-name". The Intent sent should
+                // be received by the MediaPlayerService class.
+
+                // Create intent with action
+                Intent localIntent = new Intent("sent_track");
+                localIntent.putExtra("track", track);
+                // Send local broadcast
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(localIntent);
+
+                /*if (isBound) {
                     Message message = Message.obtain();
                     Bundle bundle = new Bundle();
                     bundle.putString(MediaPlayerService.KEY_MESSAGE, "HELLO SERVICE. I AM ACTIVITY");
@@ -87,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements Filterable {
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
-                }
+                }*/
             }
         });
 

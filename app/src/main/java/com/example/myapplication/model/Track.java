@@ -19,6 +19,25 @@ public class Track implements Parcelable {
         this.trackDuration = trackDuration;
     }
 
+    protected Track(Parcel in) {
+        id = in.readLong();
+        trackName = in.readString();
+        artistName = in.readString();
+        trackDuration = in.readString();
+    }
+
+    public static final Creator<Track> CREATOR = new Creator<Track>() {
+        @Override
+        public Track createFromParcel(Parcel in) {
+            return new Track(in);
+        }
+
+        @Override
+        public Track[] newArray(int size) {
+            return new Track[size];
+        }
+    };
+
     public long getId() {
         return id;
     }
@@ -58,6 +77,9 @@ public class Track implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-
+        parcel.writeLong(id);
+        parcel.writeString(trackName);
+        parcel.writeString(artistName);
+        parcel.writeString(trackDuration);
     }
 }

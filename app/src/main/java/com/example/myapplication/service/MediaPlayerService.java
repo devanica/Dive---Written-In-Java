@@ -27,22 +27,24 @@ public class MediaPlayerService extends Service implements
         MediaPlayer.OnPreparedListener,
         MediaPlayer.OnErrorListener {
 
-    public static MediaPlayer player;
+    private static MediaPlayer player;
     private Track track;
-    public Messenger mMessenger = new Messenger(new MessageHandler(this));
+
+    //private Messenger mMessenger = new Messenger(new MessageHandler(this));
     public static final String KEY_MESSAGE = "KEY_MESSAGE";
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return mMessenger.getBinder();
+        //return mMessenger.getBinder();
+        return null;
     }
 
-    public static class MessageHandler extends Handler {
+    /*public static class MessageHandler extends Handler {
 
         WeakReference<Context> contextReference;
 
-        public MessageHandler(Context context) {
+        MessageHandler(Context context) {
             contextReference = new WeakReference<>(context);
         }
 
@@ -50,38 +52,35 @@ public class MediaPlayerService extends Service implements
         public void handleMessage(Message msg) {
             if (contextReference.get() != null) {
                 //Toast.makeText(contextReference.get(), msg.getData().getString(KEY_MESSAGE), Toast.LENGTH_SHORT).show();
-                Track track = msg.getData().getParcelable("track");
-                assert track != null;
-                Toast.makeText(contextReference.get(), String.valueOf(track.getTrackName()), Toast.LENGTH_SHORT).show();
+                track = msg.getData().getParcelable("track");
             }
         }
-    }
+    }*/
+
 
     @Override
     public void onCreate() {
         super.onCreate();
         // Register to receive messages.
         // We are registering an observer (mMessageReceiver) to receive Intents
-        // with actions named "custom-event-name".
-        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
-                new IntentFilter("track"));
+        // with actions named "sent_track".
+        player = new MediaPlayer();
+        LocalBroadcastManager.getInstance(this).registerReceiver(onTrackSelect, new IntentFilter("sent_track"));
     }
 
     // Our handler for received Intents. This will be called whenever an Intent
-    // with an action named "custom-event-name" is broadcasted.
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+    // with an action named "sent_track" is broadcasted.
+    private BroadcastReceiver onTrackSelect= new BroadcastReceiver() {
+
         @Override
         public void onReceive(Context context, Intent intent) {
-            // Get extra data included in the Intent
-
-            String message = intent.getStringExtra("message");
-            Log.d("receiver", "Got message: " + message);
-            Toast.makeText(getApplicationContext(), "mmm", Toast.LENGTH_SHORT).show();
-
+            // intent can contain anydata
+            Log.d("sohail","onReceive called");
+            track = intent.getParcelableExtra("track");
+            Toast.makeText(getApplicationContext(), String.valueOf(track.getTrackName()), Toast.LENGTH_SHORT).show();
             getFirstTrack(track.getId(), getApplicationContext());
         }
     };
-
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
 
@@ -124,11 +123,11 @@ public class MediaPlayerService extends Service implements
     @Override
     public void onDestroy() {
         // Unregister since the activity is about to be closed.
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(onTrackSelect);
         super.onDestroy();
     }
 
-    private void getFirstTrack(long l, Context context) {
+    public void getFirstTrack(long l, Context context) {
             try {
                 // Retrieve id from somewhere
                 l = track.getId();
