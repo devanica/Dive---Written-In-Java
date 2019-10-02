@@ -7,20 +7,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.MediaPlayer;
-import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
 import android.util.Log;
 import android.widget.Toast;
-
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import com.example.myapplication.model.Track;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 
 public class MediaPlayerService extends Service implements
         MediaPlayer.OnCompletionListener,
@@ -42,7 +35,8 @@ public class MediaPlayerService extends Service implements
         // Register to receive messages.
         // We are registering an observer (onTrackSelect) to receive Intents
         // with actions named "sent_track".
-        //player = new MediaPlayer();
+        player = new MediaPlayer();
+        player.setOnPreparedListener(this);
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(onTrackSelect, new IntentFilter("sent_track"));
         Log.v("track_registered","broadcast registered");
     }
@@ -57,7 +51,7 @@ public class MediaPlayerService extends Service implements
             track = intent.getParcelableExtra("track");
             Toast.makeText(getApplicationContext(), String.valueOf(track.getTrackName()), Toast.LENGTH_SHORT).show();
             Log.v("track_received","onReceive called, track received");
-            //getFirstTrack(track.getId(), getApplicationContext());
+            getFirstTrack(track.getId(), getApplicationContext());
         }
     };
 
@@ -74,6 +68,7 @@ public class MediaPlayerService extends Service implements
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
         player.start();
+        Log.v("player","start");
     }
 
     private void playTrack(){
@@ -108,17 +103,20 @@ public class MediaPlayerService extends Service implements
     }
 
     public void getFirstTrack(long l, Context context) {
+        if(player!=null){
             try {
                 // Return to idle state
                 player.reset();
+                Log.v("player","reset");
                 // Here the player object we earlier created is initialized once we call setDataSource.
                 player.setDataSource(context, ContentUris.withAppendedId
                         (android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, l));
+                Log.v("player","setdatasource");
                 player.prepare();
-                Log.v("track_prepared","onReceive called");
+                Log.v("player","prepare");
             } catch (IOException e) {
                 Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
             }
+        }
     }
-
 }
