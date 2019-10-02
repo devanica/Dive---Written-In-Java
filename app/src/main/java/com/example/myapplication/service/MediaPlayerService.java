@@ -30,57 +30,38 @@ public class MediaPlayerService extends Service implements
     private static MediaPlayer player;
     private Track track;
 
-    //private Messenger mMessenger = new Messenger(new MessageHandler(this));
-    public static final String KEY_MESSAGE = "KEY_MESSAGE";
-
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        //return mMessenger.getBinder();
         return null;
     }
-
-    /*public static class MessageHandler extends Handler {
-
-        WeakReference<Context> contextReference;
-
-        MessageHandler(Context context) {
-            contextReference = new WeakReference<>(context);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            if (contextReference.get() != null) {
-                //Toast.makeText(contextReference.get(), msg.getData().getString(KEY_MESSAGE), Toast.LENGTH_SHORT).show();
-                track = msg.getData().getParcelable("track");
-            }
-        }
-    }*/
-
 
     @Override
     public void onCreate() {
         super.onCreate();
         // Register to receive messages.
-        // We are registering an observer (mMessageReceiver) to receive Intents
+        // We are registering an observer (onTrackSelect) to receive Intents
         // with actions named "sent_track".
-        player = new MediaPlayer();
-        LocalBroadcastManager.getInstance(this).registerReceiver(onTrackSelect, new IntentFilter("sent_track"));
+        //player = new MediaPlayer();
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(onTrackSelect, new IntentFilter("sent_track"));
+        Toast.makeText(getApplicationContext(), "mps onCreate", Toast.LENGTH_SHORT).show();
+        Log.v("track_registered","broadcast registered");
     }
 
     // Our handler for received Intents. This will be called whenever an Intent
     // with an action named "sent_track" is broadcasted.
-    private BroadcastReceiver onTrackSelect= new BroadcastReceiver() {
+    private BroadcastReceiver onTrackSelect = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            // intent can contain anydata
-            Log.d("sohail","onReceive called");
+            // intent can contain any data
             track = intent.getParcelableExtra("track");
             Toast.makeText(getApplicationContext(), String.valueOf(track.getTrackName()), Toast.LENGTH_SHORT).show();
-            getFirstTrack(track.getId(), getApplicationContext());
+            Log.v("track_received","onReceive called, track received");
+            //getFirstTrack(track.getId(), getApplicationContext());
         }
     };
+
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
 
@@ -129,15 +110,13 @@ public class MediaPlayerService extends Service implements
 
     public void getFirstTrack(long l, Context context) {
             try {
-                // Retrieve id from somewhere
-                l = track.getId();
                 // Return to idle state
                 player.reset();
                 // Here the player object we earlier created is initialized once we call setDataSource.
                 player.setDataSource(context, ContentUris.withAppendedId
                         (android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, l));
                 player.prepare();
-
+                Log.v("track_prepared","onReceive called");
             } catch (IOException e) {
                 Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
             }

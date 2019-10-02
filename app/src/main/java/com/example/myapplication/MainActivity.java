@@ -80,32 +80,21 @@ public class MainActivity extends AppCompatActivity implements Filterable {
             public void onTrackSelect(View view, int position, Track track) {
                 // Send an Intent with an action named "track-name". The Intent sent should
                 // be received by the MediaPlayerService class.
-
                 // Create intent with action
                 Intent localIntent = new Intent("sent_track");
                 localIntent.putExtra("track", track);
+                Log.v("track_sent","track sent");
                 // Send local broadcast
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(localIntent);
-
-                /*if (isBound) {
-                    Message message = Message.obtain();
-                    Bundle bundle = new Bundle();
-                    bundle.putString(MediaPlayerService.KEY_MESSAGE, "HELLO SERVICE. I AM ACTIVITY");
-                    bundle.putParcelable("track", track);
-                    message.setData(bundle);
-                    try {
-                        mMessenger.send(message);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }*/
             }
         });
-
         bindService(new Intent(this, MediaPlayerService.class), new Connection(this), BIND_AUTO_CREATE);
     }
 
     public static class Connection implements ServiceConnection {
+
+        //IN ORDER TO SEND DATA BETWEEN SERVICE AND ACTIVITIES SERVICE NEEDS TO BE CONNECTED TO THE ACTIVITY
+        //AND THIS IS HOW IT'S DONE.
 
         WeakReference<Context> contextReference;
 
@@ -117,7 +106,6 @@ public class MainActivity extends AppCompatActivity implements Filterable {
         public void onServiceConnected(ComponentName name, IBinder service) {
             Context context = contextReference.get();
             if (context != null) {
-                ((MainActivity) context).mMessenger = new Messenger(service);
                 ((MainActivity) context).isBound = true;
                 Toast.makeText(context, "Service Connected", Toast.LENGTH_SHORT).show();
             }
@@ -129,23 +117,6 @@ public class MainActivity extends AppCompatActivity implements Filterable {
             if (context != null) {
                 ((MainActivity) context).isBound = false;
                 Toast.makeText(context, "Service Disconnected", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    // Send an Intent with an action named "custom-event-name". The Intent sent should
-    // be received by the ReceiverActivity.
-    private void sendMessage() {
-        if (isBound) {
-            Message message = Message.obtain();
-            Bundle bundle = new Bundle();
-            bundle.putString(MediaPlayerService.KEY_MESSAGE, "HELLO SERVICE. I AM ACTIVITY");
-            bundle.putParcelable("track", trackList.get(0));
-            message.setData(bundle);
-            try {
-                mMessenger.send(message);
-            } catch (RemoteException e) {
-                e.printStackTrace();
             }
         }
     }
@@ -225,6 +196,5 @@ public class MainActivity extends AppCompatActivity implements Filterable {
         getApplicationContext().getContentResolver().delete(uri, null, null);
         onBackPressed();
     }
-
 
 }
