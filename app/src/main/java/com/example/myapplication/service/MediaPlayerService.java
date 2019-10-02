@@ -60,7 +60,6 @@ public class MediaPlayerService extends Service implements
     @Override
     public void onCreate() {
         super.onCreate();
-
         // Register to receive messages.
         // We are registering an observer (mMessageReceiver) to receive Intents
         // with actions named "custom-event-name".
@@ -74,9 +73,12 @@ public class MediaPlayerService extends Service implements
         @Override
         public void onReceive(Context context, Intent intent) {
             // Get extra data included in the Intent
+
             String message = intent.getStringExtra("message");
             Log.d("receiver", "Got message: " + message);
             Toast.makeText(getApplicationContext(), "mmm", Toast.LENGTH_SHORT).show();
+
+            getFirstTrack(track.getId(), getApplicationContext());
         }
     };
 
