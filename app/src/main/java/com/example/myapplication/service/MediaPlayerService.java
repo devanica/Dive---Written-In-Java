@@ -37,6 +37,9 @@ public class MediaPlayerService extends Service implements
         // with actions named "sent_track".
         player = new MediaPlayer();
         player.setOnPreparedListener(this);
+        player.setOnCompletionListener(this);
+        player.setOnErrorListener(this);
+
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(onTrackSelect, new IntentFilter("sent_track"));
         Log.v("track_registered","broadcast registered");
     }
