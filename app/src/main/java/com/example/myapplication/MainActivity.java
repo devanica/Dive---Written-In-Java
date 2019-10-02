@@ -2,14 +2,24 @@ package com.example.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.provider.MediaStore;
+import android.view.View;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ListView;
@@ -17,6 +27,9 @@ import android.widget.Toast;
 import com.example.myapplication.adapter.RecentTrackAdapter;
 import com.example.myapplication.adapter.TrackAdapter;
 import com.example.myapplication.model.Track;
+import com.example.myapplication.service.MediaPlayerService;
+
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -32,7 +45,10 @@ public class MainActivity extends AppCompatActivity implements Filterable {
 
     private RecyclerView recentRecycler;
     private RecyclerView favoriteRecycler;
-    private ListView trackRecycler;
+    private RecyclerView trackRecycler;
+
+    public Messenger mMessenger;
+    public boolean isBound = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +70,73 @@ public class MainActivity extends AppCompatActivity implements Filterable {
         favoriteRecycler.setAdapter(recentTrackAdapter);
         // Adapter for trackList/filteredList.
         getTracksFromStorage();
+        trackRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         trackAdapter = new TrackAdapter(getApplicationContext(), trackList);
         trackRecycler.setAdapter(trackAdapter);
+        trackAdapter.setOnTrackSelectListener(new TrackAdapter.onTrackSelectListener() {
+            @Override
+            public void onTrackSelect(View view, int position, Track track) {
+                if (isBound) {
+                    Message message = Message.obtain();
+                    Bundle bundle = new Bundle();
+                    bundle.putString(MediaPlayerService.KEY_MESSAGE, "HELLO SERVICE. I AM ACTIVITY");
+                    bundle.putParcelable("track", track);
+                    message.setData(bundle);
+                    try {
+                        mMessenger.send(message);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        bindService(new Intent(this, MediaPlayerService.class), new Connection(this), BIND_AUTO_CREATE);
+    }
+
+    public static class Connection implements ServiceConnection {
+
+        WeakReference<Context> contextReference;
+
+        public Connection(Context context) {
+            contextReference = new WeakReference<>(context);
+        }
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Context context = contextReference.get();
+            if (context != null) {
+                ((MainActivity) context).mMessenger = new Messenger(service);
+                ((MainActivity) context).isBound = true;
+                Toast.makeText(context, "Service Connected", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Context context = contextReference.get();
+            if (context != null) {
+                ((MainActivity) context).isBound = false;
+                Toast.makeText(context, "Service Disconnected", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    // Send an Intent with an action named "custom-event-name". The Intent sent should
+    // be received by the ReceiverActivity.
+    private void sendMessage() {
+        if (isBound) {
+            Message message = Message.obtain();
+            Bundle bundle = new Bundle();
+            bundle.putString(MediaPlayerService.KEY_MESSAGE, "HELLO SERVICE. I AM ACTIVITY");
+            bundle.putParcelable("track", trackList.get(0));
+            message.setData(bundle);
+            try {
+                mMessenger.send(message);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     // Filter for search interface
@@ -84,9 +165,9 @@ public class MainActivity extends AppCompatActivity implements Filterable {
             }
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
-                filteredList = (ArrayList<Track>)results.values;
+                /*filteredList = (ArrayList<Track>)results.values;
                 // Send this to new array and into new activity. It's the only way.
-                /*Intent iresults = new Intent(MainActivity.this, FilteredResults.class);
+                Intent iresults = new Intent(MainActivity.this, FilteredResults.class);
                 iresults.putExtra("results", filteredList);
                 startActivity(iresults);*/
 

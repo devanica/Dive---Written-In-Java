@@ -51,11 +51,11 @@
         android:layout_below="@id/recycler_favorite">
     </TextView>
 
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_tracks"
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:layout_below="@+id/title_tracks">
-    </ListView>
+    </androidx.recyclerview.widget.RecyclerView>
 
 </RelativeLayout>

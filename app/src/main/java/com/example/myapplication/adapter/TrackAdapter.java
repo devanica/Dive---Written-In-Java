@@ -2,84 +2,102 @@ package com.example.myapplication.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
 import com.example.myapplication.model.Track;
+import com.example.myapplication.service.MediaPlayerService;
+
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-public class TrackAdapter extends BaseAdapter {
+public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackHolder> {
 
     private Context mContext;
     private ArrayList<Track> listOfTracks;
+    private onTrackSelectListener onTrackSelectListener;
+
+    private Messenger mMessenger;
+    private boolean isBound = false;
 
     public TrackAdapter(Context mContext, ArrayList<Track> listOfTracks) {
         this.mContext = mContext;
         this.listOfTracks = listOfTracks;
     }
 
+    public interface onTrackSelectListener{
+        void onTrackSelect(View view, int position, Track track);
+    }
+
+    public void setOnTrackSelectListener(onTrackSelectListener onTrackSelectListener) {
+        this.onTrackSelectListener = onTrackSelectListener;
+    }
+
+    @NonNull
     @Override
-    public int getCount() {
+    public TrackHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(mContext).inflate(R.layout.track, parent, false);
+        return new TrackHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull TrackHolder holder, int position) {
+        Track track = listOfTracks.get(position);
+
+        holder.trackName.setText(track.getTrackName());
+        holder.artistName.setText(track.getArtistName());
+    }
+
+
+    @Override
+    public int getItemCount() {
         return listOfTracks.size();
     }
 
-    @Override
-    public Object getItem(int i) {
-        return listOfTracks.get(i);
-    }
+    class TrackHolder extends RecyclerView.ViewHolder {
 
-    @Override
-    public long getItemId(int i) {
-        return i;
-    }
+        TextView trackName, artistName;
+        LinearLayout trackContainer;
 
-    @Override
-    public View getView(final int i, View view, ViewGroup viewGroup) {
+        public TrackHolder(@NonNull View itemView) {
+            super(itemView);
+            trackName = itemView.findViewById(R.id.track_name);
+            artistName = itemView.findViewById(R.id.artist_name);
+            trackContainer = itemView.findViewById(R.id.track_container);
 
-        final TrackViewHolder trackViewHolder;
-
-        if (view == null) {
-            view = LayoutInflater.from(mContext).inflate(R.layout.track, viewGroup, false);
-            trackViewHolder = new TrackViewHolder(view);
-            view.setTag(trackViewHolder);
-        } else {
-            trackViewHolder = (TrackViewHolder) view.getTag();
+            selectTrack();
         }
 
-        final Track track = (Track) getItem(i);
-        trackViewHolder.track_name.setText(track.getTrackName());
-        trackViewHolder.artist_name.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sendMessage();
-            }
-        });
-        trackViewHolder.artist_name.setText(track.getArtistName());
-        trackViewHolder.favourites_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                //showPopup(view);
-            }
-        });
-        return view;
+        private void selectTrack(){
+            trackContainer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(onTrackSelectListener != null && getAdapterPosition() != RecyclerView.NO_POSITION){
+                        onTrackSelectListener.onTrackSelect(itemView, getAdapterPosition(), listOfTracks.get(getAdapterPosition()));
+                    }
+                }
+            });
+        }
     }
 
-    // Send an Intent with an action named "custom-event-name". The Intent sent should
-    // be received by the ReceiverActivity.
-    private void sendMessage() {
-        Log.d("sender", "Broadcasting message");
-        Intent intent = new Intent("track");
-        // You can also include some extra data.
-        intent.putExtra("message", "This is my message!");
-        LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
-    }
+
 
     /*private void showPopup(View view){
         PopupMenu popupMenu = new PopupMenu(mContext, view);

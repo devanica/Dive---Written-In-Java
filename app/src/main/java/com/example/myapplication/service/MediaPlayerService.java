@@ -7,7 +7,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.MediaPlayer;
+import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -16,6 +20,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.myapplication.model.Track;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 
 public class MediaPlayerService extends Service implements
         MediaPlayer.OnCompletionListener,
@@ -24,11 +29,32 @@ public class MediaPlayerService extends Service implements
 
     public static MediaPlayer player;
     private Track track;
+    public Messenger mMessenger = new Messenger(new MessageHandler(this));
+    public static final String KEY_MESSAGE = "KEY_MESSAGE";
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return mMessenger.getBinder();
+    }
+
+    public static class MessageHandler extends Handler {
+
+        WeakReference<Context> contextReference;
+
+        public MessageHandler(Context context) {
+            contextReference = new WeakReference<>(context);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            if (contextReference.get() != null) {
+                //Toast.makeText(contextReference.get(), msg.getData().getString(KEY_MESSAGE), Toast.LENGTH_SHORT).show();
+                Track track = msg.getData().getParcelable("track");
+                assert track != null;
+                Toast.makeText(contextReference.get(), String.valueOf(track.getTrackName()), Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Override

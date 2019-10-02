@@ -1,8 +1,11 @@
 package com.example.myapplication.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 
-public class Track implements Serializable {
+public class Track implements Parcelable {
 
     private long id;
     private String trackName;
@@ -48,4 +51,13 @@ public class Track implements Serializable {
         this.trackDuration = trackDuration;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+
+    }
 }
