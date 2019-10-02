@@ -1,11 +1,14 @@
 package com.example.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
+import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -91,6 +94,18 @@ public class MainActivity extends AppCompatActivity implements Filterable {
             }
         });
         bindService(new Intent(this, MediaPlayerService.class), connection, BIND_AUTO_CREATE);
+    }
+
+    private void startForegroundService(View view, Track track){
+        Intent serviceIntent = new Intent(this, MediaPlayerService.class);
+        serviceIntent.putExtra("track", track);
+
+        ContextCompat.startForegroundService(this, serviceIntent);
+    }
+
+    private void stopForegroundService(){
+        Intent serviceIntent = new Intent(this, MediaPlayerService.class);
+        stopService(serviceIntent);
     }
 
     public static class Connection implements ServiceConnection {

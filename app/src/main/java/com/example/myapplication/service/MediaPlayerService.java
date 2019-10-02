@@ -1,5 +1,7 @@
 package com.example.myapplication.service;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.ContentUris;
@@ -9,11 +11,19 @@ import android.content.IntentFilter;
 import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.example.myapplication.MainActivity;
+import com.example.myapplication.R;
 import com.example.myapplication.model.Track;
 import java.io.IOException;
+
+import static com.example.myapplication.App.NOTIF_CHANNEL_ID;
 
 public class MediaPlayerService extends Service implements
         MediaPlayer.OnCompletionListener,
@@ -22,6 +32,8 @@ public class MediaPlayerService extends Service implements
 
     private static MediaPlayer player;
     private Track track;
+
+    NotificationManagerCompat notificationManagerCompat;
 
     @Nullable
     @Override
@@ -32,6 +44,8 @@ public class MediaPlayerService extends Service implements
     @Override
     public void onCreate() {
         super.onCreate();
+
+        notificationManagerCompat = NotificationManagerCompat.from(this);
         // Register to receive messages.
         // We are registering an observer (onTrackSelect) to receive Intents
         // with actions named "sent_track".
@@ -42,6 +56,34 @@ public class MediaPlayerService extends Service implements
 
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(onTrackSelect, new IntentFilter("sent_track"));
         Log.v("track_registered","broadcast registered");
+    }
+
+    private void triggerNotificationChannelOne(View view){
+        // here find strings from track info to be set in notification instead of title and content
+
+        Notification notification = new NotificationCompat.Builder(this, NOTIF_CHANNEL_ID)
+                .setContentTitle("Dive")
+                .setContentText(track.getTrackName())
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .build();
+        notificationManagerCompat.notify(1, notification);
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        track = intent.getParcelableExtra("track");
+        Intent notifIntent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notifIntent, 0);
+        Notification notification = new NotificationCompat.Builder(this, NOTIF_CHANNEL_ID)
+                .setContentTitle("Dive")
+                .setContentText(track.getTrackName())
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setContentIntent(pendingIntent)
+                .build();
+        startForeground(1, notification);
+        return START_STICKY;
     }
 
     // Our handler for received Intents. This will be called whenever an Intent
