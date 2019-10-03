@@ -76,13 +76,13 @@ public class MainActivity extends AppCompatActivity implements Filterable {
         btnNext = findViewById(R.id.btn_next);
         btnPrev = findViewById(R.id.btn_prev);
         // Adapter for recentList.
-        recentRecycler.setLayoutManager(new GridLayoutManager(getApplicationContext(), 3,
+        recentRecycler.setLayoutManager(new GridLayoutManager(getApplicationContext(), 1,
                                         GridLayoutManager.HORIZONTAL, false));
         recentTrackAdapter = new RecentTrackAdapter(recentList, getApplicationContext());
         recentRecycler.setAdapter(recentTrackAdapter);
 
         // Adapter for favoriteList.
-        favoriteRecycler.setLayoutManager(new GridLayoutManager(getApplicationContext(), 3,
+        favoriteRecycler.setLayoutManager(new GridLayoutManager(getApplicationContext(), 1,
                                         GridLayoutManager.HORIZONTAL, false));
         favTrackAdapter = new FavTrackAdapter();
         favoriteRecycler.setAdapter(favTrackAdapter);
