@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements Filterable {
         favoriteRecycler.setLayoutManager(new GridLayoutManager(getApplicationContext(), 3,
                                         GridLayoutManager.HORIZONTAL, false));
         favTrackAdapter = new FavTrackAdapter();
-        favoriteRecycler.setAdapter(recentTrackAdapter);
+        favoriteRecycler.setAdapter(favTrackAdapter);
         mainActivityViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
         //Track t = new Track(1, "hhh", "hhh", "hhh");
         //mainActivityViewModel.insertTrack(t);
