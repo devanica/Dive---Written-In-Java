@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,9 +24,13 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.example.myapplication.ViewModel.MainActivityViewModel;
+import com.example.myapplication.adapter.FavTrackAdapter;
 import com.example.myapplication.adapter.RecentTrackAdapter;
 import com.example.myapplication.adapter.TrackAdapter;
 import com.example.myapplication.model.Track;
+import com.example.myapplication.room.DatabaseRepository;
 import com.example.myapplication.service.MediaPlayerService;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -40,6 +45,10 @@ public class MainActivity extends AppCompatActivity implements Filterable {
 
     private RecentTrackAdapter recentTrackAdapter;
     private TrackAdapter trackAdapter;
+    private FavTrackAdapter favTrackAdapter;
+
+    private DatabaseRepository databaseRepository;
+    private MainActivityViewModel mainActivityViewModel;
 
     private RecyclerView recentRecycler;
     private RecyclerView favoriteRecycler;
@@ -49,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements Filterable {
     private Connection connection;
     public boolean isBound = false;
     public static int currPosition, nextPosition, prevPosition;
-    private Intent positionIntent, selectIntent;
+    private Intent selectIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,11 +80,21 @@ public class MainActivity extends AppCompatActivity implements Filterable {
                                         GridLayoutManager.HORIZONTAL, false));
         recentTrackAdapter = new RecentTrackAdapter(recentList, getApplicationContext());
         recentRecycler.setAdapter(recentTrackAdapter);
+
         // Adapter for favoriteList.
         favoriteRecycler.setLayoutManager(new GridLayoutManager(getApplicationContext(), 3,
                                         GridLayoutManager.HORIZONTAL, false));
-        recentTrackAdapter = new RecentTrackAdapter(favoriteList, getApplicationContext());
+        favTrackAdapter = new FavTrackAdapter();
         favoriteRecycler.setAdapter(recentTrackAdapter);
+        mainActivityViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
+        //Track t = new Track(1, "hhh", "hhh", "hhh");
+        //mainActivityViewModel.insertTrack(t);
+        mainActivityViewModel.getAllTracks().observe(this, tracks -> {
+            // TODO: Update recyclerview
+            favTrackAdapter.setFavTracks(tracks);
+            Toast.makeText(getApplicationContext(), "OnChanged", Toast.LENGTH_SHORT).show();
+        });
+
         // Adapter for trackList/filteredList.
         getTracksFromStorage();
         trackRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
@@ -92,6 +111,12 @@ public class MainActivity extends AppCompatActivity implements Filterable {
                 Log.v("track_sent","track sent");
                 // Send local broadcast
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(selectIntent);
+            }
+
+            @Override
+            public void addToFavorites(View view, int position, Track track) {
+                mainActivityViewModel.insertTrack(track);
+                Toast.makeText(getApplicationContext(), "added", Toast.LENGTH_SHORT).show();
             }
         });
         bindService(new Intent(this, MediaPlayerService.class), connection, BIND_AUTO_CREATE);
@@ -121,17 +146,54 @@ public class MainActivity extends AppCompatActivity implements Filterable {
         btnPrev.setOnClickListener(view -> {
             prevPosition = currPosition--;
             if (prevPosition > 0){
-                positionIntent.putExtra("track", trackList.get(prevPosition));
-                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(positionIntent);
+                selectIntent.putExtra("track", trackList.get(prevPosition));
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(selectIntent);
                 btnPlay.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause));
             }else {
                 prevPosition = 0;
-                positionIntent.putExtra("track", trackList.get(prevPosition));
-                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(positionIntent);
+                selectIntent.putExtra("track", trackList.get(prevPosition));
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(selectIntent);
                 btnPlay.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause));
             }
         });
     }
+
+    /*private void repeat(){
+        repeatBottom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(isRepeatOn){
+                    isRepeatOn = false;
+                    repeatBottom.setImageResource(R.drawable.ic_repeat);
+                }else{
+                    // Make repeat true.
+                    isRepeatOn = true;
+                    // Make shuffle false.
+                    isShuffleOn = false;
+                    repeatBottom.setImageResource(R.drawable.ic_repeat_one_black);
+                    shuffleBottom.setImageResource(R.drawable.ic_shuffle);
+                }
+            }
+        });
+    }
+    private void shuffle(){
+        shuffleBottom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(isShuffleOn){
+                    isShuffleOn = false;
+                    shuffleBottom.setImageResource(R.drawable.ic_shuffle);
+                }else{
+                    // Make shuffle true.
+                    isShuffleOn= true;
+                    // Make repeat false.
+                    isRepeatOn = false;
+                    shuffleBottom.setImageResource(R.drawable.ic_shuffle_black);
+                    repeatBottom.setImageResource(R.drawable.ic_repeat);
+                }
+            }
+        });
+    }*/
 
     public static class Connection implements ServiceConnection {
         //IN ORDER TO SEND DATA BETWEEN SERVICE AND ACTIVITIES SERVICE NEEDS TO BE CONNECTED TO THE ACTIVITY

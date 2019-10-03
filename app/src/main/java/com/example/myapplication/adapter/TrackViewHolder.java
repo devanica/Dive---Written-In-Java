@@ -14,7 +14,7 @@ public class TrackViewHolder {
     public TrackViewHolder(View view) {
         track_name = (TextView)view.findViewById(R.id.track_name);
         artist_name = (TextView)view.findViewById(R.id.artist_name);
-        favourites_button = (ImageView)view.findViewById(R.id.favourites_button);
+        favourites_button = (ImageView)view.findViewById(R.id.btn_addtofav);
         track_background = (ImageView)view.findViewById(R.id.track_icon);
     }
 }

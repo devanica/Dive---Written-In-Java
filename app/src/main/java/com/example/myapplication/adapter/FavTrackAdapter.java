@@ -9,18 +9,13 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.R;
 import com.example.myapplication.model.Track;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class RecentTrackAdapter extends RecyclerView.Adapter<RecentTrackHolder> {
+public class FavTrackAdapter extends RecyclerView.Adapter<RecentTrackHolder> {
 
-    private List<Track> tracks;
-    private Context context;
-
-    public RecentTrackAdapter(ArrayList<Track> recentTrackItems, Context context) {
-        this.tracks = recentTrackItems;
-        this.context = context;
-    }
+    private List<Track> tracks = new ArrayList<>();
 
     @NonNull
     @Override
@@ -38,5 +33,10 @@ public class RecentTrackAdapter extends RecyclerView.Adapter<RecentTrackHolder> 
     @Override
     public int getItemCount() {
         return this.tracks.size();
+    }
+
+    public void setFavTracks(List<Track> tracks){
+        this.tracks = tracks;
+        notifyDataSetChanged();
     }
 }

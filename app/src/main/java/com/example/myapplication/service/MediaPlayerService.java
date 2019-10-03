@@ -70,10 +70,10 @@ public class MediaPlayerService extends Service implements
                 .setContentText(track.getTrackName())
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .setCategory(NotificationCompat.CATEGORY_SERVICE)
+                .setVibrate(null)
                 //.setContentIntent(pendingIntent)
                 .setAutoCancel(true)
-                .setOnlyAlertOnce(true)
                 //.addAction(R.drawable.ic_close, "close", closeIntent)
                 .build();
         notificationManagerCompat.notify(1, notification);

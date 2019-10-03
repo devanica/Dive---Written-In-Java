@@ -3,10 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_height="wrap_content"
-    android:layout_width="wrap_content">
+    android:layout_width="wrap_content"
+    android:background="@color/colorPrimaryDark">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/addfolder"
+        android:background="@color/colorPrimaryDark"
         android:layout_width="120dp"
         android:layout_height="100dp"
         android:layout_margin="5dp"
@@ -16,6 +18,7 @@
         card_view:cardCornerRadius="3dp">
         <LinearLayout
             android:id="@+id/parent"
+            android:background="@color/colorPrimaryDark"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
@@ -28,7 +31,7 @@
                 android:layout_height="20dp"
                 android:layout_gravity="center"
                 android:layout_marginTop="20dp"
-                android:layout_marginBottom="10dp"/>
+                android:layout_marginBottom="10dp" />
 
             <TextView
                 android:id="@+id/recent_track_name"
@@ -37,7 +40,7 @@
                 android:gravity="center"
                 android:textColor="@android:color/black"
                 android:textSize="12sp"
-                android:singleLine="true"/>
+                android:singleLine="true" />
 
             <TextView
                 android:id="@+id/recent_artist_name"

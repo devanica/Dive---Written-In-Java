@@ -2,12 +2,17 @@ package com.example.myapplication.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
-import java.io.Serializable;
-
+@Entity(tableName = "fav_tracks")
 public class Track implements Parcelable {
 
+    @ColumnInfo(name = "track_id")
+    @PrimaryKey(autoGenerate = true)
     private long id;
+
     private String trackName;
     private String artistName;
     private String trackDuration;
@@ -37,6 +42,19 @@ public class Track implements Parcelable {
             return new Track[size];
         }
     };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeLong(id);
+        parcel.writeString(trackName);
+        parcel.writeString(artistName);
+        parcel.writeString(trackDuration);
+    }
 
     public long getId() {
         return id;
@@ -70,16 +88,4 @@ public class Track implements Parcelable {
         this.trackDuration = trackDuration;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeLong(id);
-        parcel.writeString(trackName);
-        parcel.writeString(artistName);
-        parcel.writeString(trackDuration);
-    }
 }

@@ -27,15 +27,13 @@ import com.example.myapplication.service.MediaPlayerService;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackHolder> {
 
     private Context mContext;
     private ArrayList<Track> listOfTracks;
     private onTrackSelectListener onTrackSelectListener;
-
-    private Messenger mMessenger;
-    private boolean isBound = false;
 
     public TrackAdapter(Context mContext, ArrayList<Track> listOfTracks) {
         this.mContext = mContext;
@@ -44,6 +42,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackHolder>
 
     public interface onTrackSelectListener{
         void onTrackSelect(View view, int position, Track track);
+        void addToFavorites(View view, int position, Track track);
     }
 
     public void setOnTrackSelectListener(onTrackSelectListener onTrackSelectListener) {
@@ -65,7 +64,6 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackHolder>
         holder.artistName.setText(track.getArtistName());
     }
 
-
     @Override
     public int getItemCount() {
         return listOfTracks.size();
@@ -75,23 +73,31 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackHolder>
 
         TextView trackName, artistName;
         LinearLayout trackContainer;
+        ImageView addtofavButton;
 
         public TrackHolder(@NonNull View itemView) {
             super(itemView);
             trackName = itemView.findViewById(R.id.track_name);
             artistName = itemView.findViewById(R.id.artist_name);
             trackContainer = itemView.findViewById(R.id.track_container);
+            addtofavButton = itemView.findViewById(R.id.btn_addtofav);
 
             selectTrack();
+            addToFavorites();
         }
 
         private void selectTrack(){
-            trackContainer.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(onTrackSelectListener != null && getAdapterPosition() != RecyclerView.NO_POSITION){
-                        onTrackSelectListener.onTrackSelect(itemView, getAdapterPosition(), listOfTracks.get(getAdapterPosition()));
-                    }
+            trackContainer.setOnClickListener(view -> {
+                if(onTrackSelectListener != null && getAdapterPosition() != RecyclerView.NO_POSITION){
+                    onTrackSelectListener.onTrackSelect(itemView, getAdapterPosition(), listOfTracks.get(getAdapterPosition()));
+                }
+            });
+        }
+
+        private void addToFavorites(){
+            addtofavButton.setOnClickListener(view -> {
+                if(onTrackSelectListener != null && getAdapterPosition() != RecyclerView.NO_POSITION){
+                    onTrackSelectListener.addToFavorites(itemView, getAdapterPosition(), listOfTracks.get(getAdapterPosition()));
                 }
             });
         }

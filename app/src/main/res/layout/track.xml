@@ -41,11 +41,12 @@
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/favourites_button"
+        android:id="@+id/btn_addtofav"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="10dp"
-        android:onClick="showPopup"/>
+        android:padding="10dp"
+        android:src="@drawable/ic_close"/>
 
 </LinearLayout>
