@@ -82,14 +82,11 @@ public class MediaPlayerService extends Service implements
     // Our handler for received Intents. This will be called whenever an Intent
     // with an action named "sent_track" is broadcasted.
     private BroadcastReceiver onTrackSelect = new BroadcastReceiver() {
-
         @Override
         public void onReceive(Context context, Intent intent) {
             // intent can contain any data
-
-            track = intent.getParcelableExtra("track");
-            if(intent.getParcelableExtra("position")!=null){
-                track = intent.getParcelableExtra("position");
+            if(intent.getParcelableExtra("track")!=null){
+                track = intent.getParcelableExtra("track");
             }
 
             Log.v("player","try to play");

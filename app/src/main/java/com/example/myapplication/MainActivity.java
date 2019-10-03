@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements Filterable {
     private ImageView btnPlay, btnNext, btnPrev;
     private Connection connection;
     public boolean isBound = false;
-    public static long currPosition, newPosition;
+    public static int currPosition, nextPosition, prevPosition;
     private Intent positionIntent, selectIntent;
 
     @Override
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements Filterable {
                 // Send an Intent with an action named "track-name". The Intent sent should
                 // be received by the MediaPlayerService class.
                 // Create intent with action
-                currPosition = track.getId();
+                currPosition = position;
                 selectIntent.putExtra("track", track);
                 Log.v("track_sent","track sent");
                 // Send local broadcast
@@ -104,29 +104,29 @@ public class MainActivity extends AppCompatActivity implements Filterable {
         });
 
         btnNext.setOnClickListener(view -> {
-            currPosition = currPosition++;
-            if (currPosition < trackList.size()-1){
+            nextPosition = currPosition++;
+            if (nextPosition < trackList.size()-1){
                 // Send local broadcast
-                selectIntent.putExtra("position", trackList.get((int) currPosition));
+                selectIntent.putExtra("track", trackList.get(nextPosition));
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(selectIntent);
                 btnPlay.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause));
             }else {
-                currPosition = 0;
-                selectIntent.putExtra("position", trackList.get((int) currPosition));
+                nextPosition = 0;
+                selectIntent.putExtra("track", trackList.get(nextPosition));
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(selectIntent);
                 btnPlay.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause));
             }
         });
 
         btnPrev.setOnClickListener(view -> {
-            currPosition = currPosition--;
-            if (currPosition > 0){
-                positionIntent.putExtra("position", trackList.get((int) currPosition));
+            prevPosition = currPosition--;
+            if (prevPosition > 0){
+                positionIntent.putExtra("track", trackList.get(prevPosition));
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(positionIntent);
                 btnPlay.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause));
             }else {
-                currPosition = currPosition++;
-                positionIntent.putExtra("position", trackList.get((int) currPosition));
+                prevPosition = 0;
+                positionIntent.putExtra("track", trackList.get(prevPosition));
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(positionIntent);
                 btnPlay.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause));
             }
