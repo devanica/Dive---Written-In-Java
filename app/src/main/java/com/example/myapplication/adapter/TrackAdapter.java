@@ -62,6 +62,14 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackHolder>
 
         holder.trackName.setText(track.getTrackName());
         holder.artistName.setText(track.getArtistName());
+
+        if(track.getIfAddedIntoFav()){
+            // set one icon
+
+        }else {
+            // set another icon
+
+        }
     }
 
     @Override

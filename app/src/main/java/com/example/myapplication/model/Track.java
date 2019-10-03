@@ -16,6 +16,7 @@ public class Track implements Parcelable {
     private String trackName;
     private String artistName;
     private String trackDuration;
+    public boolean isAddedIntoFav;
 
     public Track(long id, String trackName, String artistName, String trackDuration) {
         this.id = id;
@@ -29,6 +30,7 @@ public class Track implements Parcelable {
         trackName = in.readString();
         artistName = in.readString();
         trackDuration = in.readString();
+        isAddedIntoFav = in.readByte() != 0;
     }
 
     public static final Creator<Track> CREATOR = new Creator<Track>() {
@@ -43,17 +45,12 @@ public class Track implements Parcelable {
         }
     };
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public boolean getIfAddedIntoFav() {
+        return isAddedIntoFav;
     }
 
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeLong(id);
-        parcel.writeString(trackName);
-        parcel.writeString(artistName);
-        parcel.writeString(trackDuration);
+    public void addIntofav(boolean addedIntoFav) {
+        isAddedIntoFav = addedIntoFav;
     }
 
     public long getId() {
@@ -88,4 +85,17 @@ public class Track implements Parcelable {
         this.trackDuration = trackDuration;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeLong(id);
+        parcel.writeString(trackName);
+        parcel.writeString(artistName);
+        parcel.writeString(trackDuration);
+        parcel.writeByte((byte) (isAddedIntoFav ? 1 : 0));
+    }
 }

@@ -113,7 +113,13 @@ public class MainActivity extends AppCompatActivity implements Filterable {
 
             @Override
             public void addToFavorites(View view, int position, Track track) {
-                mainActivityViewModel.insertTrack(track);
+                track.addIntofav(!track.getIfAddedIntoFav());
+                if(track.getIfAddedIntoFav()){
+                    mainActivityViewModel.deleteTrack(track);
+                }else {
+                    mainActivityViewModel.insertTrack(track);
+                }
+
                 Toast.makeText(getApplicationContext(), "added", Toast.LENGTH_SHORT).show();
             }
         });
