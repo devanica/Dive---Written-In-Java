@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">My Application</string>
+
+    <string name="recent_tracks">Recent Tracks</string>
+    <string name="favorite_tracks">Favorite Tracks</string>
+    <string name="all_tracks">All Tracks</string>
 </resources>

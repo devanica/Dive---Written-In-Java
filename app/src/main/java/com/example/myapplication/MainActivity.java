@@ -24,7 +24,6 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 import com.example.myapplication.ViewModel.MainActivityViewModel;
 import com.example.myapplication.adapter.FavTrackAdapter;
 import com.example.myapplication.adapter.RecentTrackAdapter;

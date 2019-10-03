@@ -20,7 +20,7 @@ public class FavTrackAdapter extends RecyclerView.Adapter<RecentTrackHolder> {
     @NonNull
     @Override
     public RecentTrackHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        @SuppressLint("InflateParams") View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recent_track, null);
+        @SuppressLint("InflateParams") View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.favorite_track, null);
         return new RecentTrackHolder(layoutView);
     }
 

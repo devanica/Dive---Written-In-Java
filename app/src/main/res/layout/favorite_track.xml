@@ -7,16 +7,17 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/addfolder"
+        android:background="@color/colorPrimaryDark"
         android:layout_width="120dp"
-        android:layout_height="100dp"
+        android:layout_height="120dp"
         android:layout_margin="5dp"
         android:padding="3dp"
         android:layout_gravity="center"
-        android:backgroundTint="@color/darkBlue"
         card_view:cardElevation="3dp"
-        card_view:cardCornerRadius="3dp">
+        card_view:cardCornerRadius="10dp">
         <LinearLayout
             android:id="@+id/parent"
+            android:background="@color/colorPrimaryDark"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
@@ -27,28 +28,24 @@
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:src="@drawable/ic_audiotrack"
                 android:layout_gravity="center"
                 android:layout_marginTop="20dp"
-                android:layout_marginBottom="10dp"/>
+                android:layout_marginBottom="10dp" />
 
             <TextView
                 android:id="@+id/recent_track_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/cabin"
                 android:gravity="center"
                 android:textColor="@android:color/black"
                 android:textSize="12sp"
-                android:singleLine="true"/>
+                android:singleLine="true" />
 
             <TextView
                 android:id="@+id/recent_artist_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/cabin"
                 android:gravity="center"
-                android:textColor="@color/grey"
                 android:textSize="10sp"
                 android:singleLine="true"/>
         </LinearLayout>
