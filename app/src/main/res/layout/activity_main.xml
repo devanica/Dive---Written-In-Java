@@ -55,7 +55,39 @@
         android:id="@+id/recycler_tracks"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:layout_below="@+id/title_tracks">
+        android:layout_below="@+id/title_tracks"
+        android:layout_above="@+id/controls_container">
     </androidx.recyclerview.widget.RecyclerView>
+
+    <LinearLayout
+        android:id="@+id/controls_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true">
+        <ImageView
+            android:id="@+id/btn_prev"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_close"
+            android:layout_margin="20dp">
+        </ImageView>
+
+        <ImageView
+            android:id="@+id/btn_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_close"
+            android:layout_margin="20dp">
+        </ImageView>
+
+        <ImageView
+            android:id="@+id/btn_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_close"
+            android:layout_margin="20dp">
+        </ImageView>
+    </LinearLayout>
 
 </RelativeLayout>

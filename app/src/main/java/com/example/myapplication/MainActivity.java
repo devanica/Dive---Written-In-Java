@@ -1,14 +1,11 @@
 package com.example.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
-import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -19,24 +16,20 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Filter;
 import android.widget.Filterable;
-import android.widget.ListView;
+import android.widget.ImageView;
 import android.widget.Toast;
 import com.example.myapplication.adapter.RecentTrackAdapter;
 import com.example.myapplication.adapter.TrackAdapter;
 import com.example.myapplication.model.Track;
 import com.example.myapplication.service.MediaPlayerService;
-
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Objects;
+import static com.example.myapplication.service.MediaPlayerService.player;
 
 public class MainActivity extends AppCompatActivity implements Filterable {
 
@@ -52,8 +45,11 @@ public class MainActivity extends AppCompatActivity implements Filterable {
     private RecyclerView favoriteRecycler;
     private RecyclerView trackRecycler;
 
+    private ImageView btnPlay, btnNext, btnPrev;
     private Connection connection;
     public boolean isBound = false;
+    public static long currPosition, newPosition;
+    private Intent positionIntent, selectIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,10 +57,15 @@ public class MainActivity extends AppCompatActivity implements Filterable {
         setContentView(R.layout.activity_main);
 
         connection = new Connection(this);
+        selectIntent = new Intent("sent_track");
 
         recentRecycler = findViewById(R.id.recycler_recent);
         favoriteRecycler = findViewById(R.id.recycler_favorite);
         trackRecycler = findViewById(R.id.recycler_tracks);
+
+        btnPlay = findViewById(R.id.btn_play);
+        btnNext = findViewById(R.id.btn_next);
+        btnPrev = findViewById(R.id.btn_prev);
         // Adapter for recentList.
         recentRecycler.setLayoutManager(new GridLayoutManager(getApplicationContext(), 3,
                                         GridLayoutManager.HORIZONTAL, false));
@@ -86,33 +87,55 @@ public class MainActivity extends AppCompatActivity implements Filterable {
                 // Send an Intent with an action named "track-name". The Intent sent should
                 // be received by the MediaPlayerService class.
                 // Create intent with action
-                Intent localIntent = new Intent("sent_track");
-                localIntent.putExtra("track", track);
+                currPosition = track.getId();
+                selectIntent.putExtra("track", track);
                 Log.v("track_sent","track sent");
                 // Send local broadcast
-                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(localIntent);
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(selectIntent);
             }
         });
         bindService(new Intent(this, MediaPlayerService.class), connection, BIND_AUTO_CREATE);
-    }
 
-    private void startForegroundService(View view, Track track){
-        Intent serviceIntent = new Intent(this, MediaPlayerService.class);
-        serviceIntent.putExtra("track", track);
+        btnPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-        ContextCompat.startForegroundService(this, serviceIntent);
-    }
+            }
+        });
 
-    private void stopForegroundService(){
-        Intent serviceIntent = new Intent(this, MediaPlayerService.class);
-        stopService(serviceIntent);
+        btnNext.setOnClickListener(view -> {
+            currPosition = currPosition++;
+            if (currPosition < trackList.size()-1){
+                // Send local broadcast
+                selectIntent.putExtra("position", trackList.get((int) currPosition));
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(selectIntent);
+                btnPlay.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause));
+            }else {
+                currPosition = 0;
+                selectIntent.putExtra("position", trackList.get((int) currPosition));
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(selectIntent);
+                btnPlay.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause));
+            }
+        });
+
+        btnPrev.setOnClickListener(view -> {
+            currPosition = currPosition--;
+            if (currPosition > 0){
+                positionIntent.putExtra("position", trackList.get((int) currPosition));
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(positionIntent);
+                btnPlay.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause));
+            }else {
+                currPosition = currPosition++;
+                positionIntent.putExtra("position", trackList.get((int) currPosition));
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(positionIntent);
+                btnPlay.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause));
+            }
+        });
     }
 
     public static class Connection implements ServiceConnection {
-
         //IN ORDER TO SEND DATA BETWEEN SERVICE AND ACTIVITIES SERVICE NEEDS TO BE CONNECTED TO THE ACTIVITY
         //AND THIS IS HOW IT'S DONE.
-
         Context contextReference;
 
         public Connection(Context contextReference) {
