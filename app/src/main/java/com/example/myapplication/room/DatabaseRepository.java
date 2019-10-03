@@ -25,6 +25,8 @@ public class DatabaseRepository {
     public LiveData<List<Track>> getfavTracks(){
         return favTracks;
     }
+
+    //thread issue when adding tracks too fast it goes on the same thread
     public void deleteAllTracks(){
         Executors.newSingleThreadExecutor().execute(new Runnable() {
             @Override
