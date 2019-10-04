@@ -2,55 +2,62 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    android:layout_height="wrap_content"
-    android:layout_width="wrap_content">
+    android:layout_height="120dp"
+    android:layout_width="120dp"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/addfolder"
         android:layout_width="120dp"
-        android:layout_height="100dp"
+        android:layout_height="120dp"
         android:layout_margin="5dp"
-        android:padding="3dp"
+        android:padding="5dp"
         android:layout_gravity="center"
-        android:backgroundTint="@color/darkBlue"
+        android:backgroundTint="@color/lightBlue"
         card_view:cardElevation="3dp"
-        card_view:cardCornerRadius="3dp">
+        card_view:cardCornerRadius="20dp">
         <LinearLayout
             android:id="@+id/parent"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:layout_gravity="top"
-            android:padding="5dp"
-            android:gravity="top">
+            android:padding="5dp">
 
             <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_audiotrack"
-                android:layout_gravity="center"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="10dp"/>
+                android:id="@+id/btn_play"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="10dp"
+                android:src="@drawable/ic_play"
+                android:tint="@color/accentBlue"
+                android:layout_gravity="start"
+                android:visibility="invisible"/>
 
             <TextView
                 android:id="@+id/recent_track_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/cabin"
-                android:gravity="center"
-                android:textColor="@android:color/black"
+                android:layout_marginStart="10dp"
+                android:gravity="start"
+                android:fontFamily="@font/ubuntu_bold"
+                android:textColor="@color/lightestBlue"
                 android:textSize="12sp"
-                android:singleLine="true"/>
+                android:singleLine="true"
+                tools:text="Rihanna"/>
 
             <TextView
                 android:id="@+id/recent_artist_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/cabin"
-                android:gravity="center"
-                android:textColor="@color/grey"
+                android:layout_marginStart="10dp"
+                android:layout_marginBottom="15dp"
+                android:gravity="start"
+                android:fontFamily="@font/ubuntu_light"
+                android:textColor="@color/lighterBlue"
                 android:textSize="10sp"
-                android:singleLine="true"/>
+                android:singleLine="true"
+                tools:text="Kiss it better"/>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 </RelativeLayout>
