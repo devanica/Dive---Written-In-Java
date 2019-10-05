@@ -29,4 +29,6 @@ public interface Dao {
     @Query("SELECT * FROM fav_tracks ORDER BY trackName DESC")
     LiveData<List<Track>> getFavTracks();
 
+    @Query("SELECT * FROM fav_tracks WHERE track_id=:id ")
+    Track getTrack(long id);
 }

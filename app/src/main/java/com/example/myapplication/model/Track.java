@@ -16,7 +16,7 @@ public class Track implements Parcelable {
     private String trackName;
     private String artistName;
     private String trackDuration;
-    public boolean isAddedIntoFav;
+    private boolean isAddedIntoFav;
 
     public Track(long id, String trackName, String artistName, String trackDuration) {
         this.id = id;
@@ -45,11 +45,11 @@ public class Track implements Parcelable {
         }
     };
 
-    public boolean getIfAddedIntoFav() {
+    public boolean isAddedIntoFav() {
         return isAddedIntoFav;
     }
 
-    public void addIntofav(boolean addedIntoFav) {
+    public void setAddedIntoFav(boolean addedIntoFav) {
         isAddedIntoFav = addedIntoFav;
     }
 

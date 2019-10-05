@@ -39,4 +39,5 @@ public class FavTrackAdapter extends RecyclerView.Adapter<RecentTrackHolder> {
         this.tracks = tracks;
         notifyDataSetChanged();
     }
+
 }

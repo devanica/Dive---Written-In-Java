@@ -15,6 +15,7 @@ public class DatabaseRepository {
 
     private Dao dao;
     private LiveData<List<Track>> favTracks;
+    private Track track;
 
     public DatabaseRepository(Application application){
         Database database = Database.getInstance(application);
@@ -22,8 +23,18 @@ public class DatabaseRepository {
         favTracks = dao.getFavTracks();
     }
 
-    public LiveData<List<Track>> getfavTracks(){
+    public LiveData<List<Track>> getFavTracks(){
         return favTracks;
+    }
+
+    public Track getTrack(long id){
+        Executors.newSingleThreadExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                track = dao.getTrack(id);
+            }
+        });
+        return track;
     }
 
     //thread issue when adding tracks too fast it goes on the same thread

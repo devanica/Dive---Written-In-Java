@@ -1,15 +1,12 @@
 package com.example.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
@@ -23,7 +20,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.Filter;
 import android.widget.Filterable;
@@ -39,7 +35,6 @@ import com.example.myapplication.room.DatabaseRepository;
 import com.example.myapplication.service.MediaPlayerService;
 import java.util.ArrayList;
 import java.util.Objects;
-
 import static com.example.myapplication.App.NOTIF_CHANNEL_ID;
 
 public class MainActivity extends AppCompatActivity implements Filterable {
@@ -125,15 +120,24 @@ public class MainActivity extends AppCompatActivity implements Filterable {
 
             @Override
             public void addToFavorites(View view, int position, Track track) {
-                if(!track.getIfAddedIntoFav()){
-                    track.addIntofav(true);
+                Track roomTrack = mainActivityViewModel.getTrack(track.getId());
+                if(track.getId()==roomTrack.getId()){
+                    mainActivityViewModel.deleteTrack(track);
+                    trackAdapter.notifyItemChanged(position);
+                }else {
+                    mainActivityViewModel.insertTrack(track);
+                    trackAdapter.notifyItemChanged(position);
+                }
+
+                /*if(!track.isAddedIntoFav()){
+                    track.setAddedIntoFav(true);
                     mainActivityViewModel.insertTrack(track);
                     trackAdapter.notifyItemChanged(position);
                 }else {
-                    track.addIntofav(false);
+                    track.setAddedIntoFav(false);
                     mainActivityViewModel.deleteTrack(track);
                     trackAdapter.notifyItemChanged(position);
-                }
+                }*/
             }
         });
 

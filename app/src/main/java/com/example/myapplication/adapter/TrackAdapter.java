@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.R;
 import com.example.myapplication.model.Track;
 import com.example.myapplication.room.DatabaseRepository;
+import com.example.myapplication.viewmodel.MainActivityViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.List;
 public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackHolder> {
 
     private Context mContext;
+    private DatabaseRepository databaseRepository;
     private ArrayList<Track> listOfTracks;
     private onTrackSelectListener onTrackSelectListener;
 
@@ -51,7 +53,8 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackHolder>
         holder.trackName.setText(track.getTrackName());
         holder.artistName.setText(track.getArtistName());
 
-        if(track.getIfAddedIntoFav()){
+
+        if(track.isAddedIntoFav()){
             // set one icon
             holder.addTofavButton.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_remove));
         }else {

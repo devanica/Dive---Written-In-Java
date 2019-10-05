@@ -12,11 +12,12 @@ public class MainActivityViewModel extends AndroidViewModel {
 
     private DatabaseRepository databaseRepository;
     private LiveData<List<Track>> allTracks;
+    private Track track;
 
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
         databaseRepository = new DatabaseRepository(application);
-        allTracks = databaseRepository.getfavTracks();
+        allTracks = databaseRepository.getFavTracks();
     }
 
     public void insertTrack(Track track){
@@ -37,5 +38,9 @@ public class MainActivityViewModel extends AndroidViewModel {
 
     public LiveData<List<Track>> getAllTracks(){
         return allTracks;
+    }
+
+    public Track getTrack(long id){
+        return databaseRepository.getTrack(id);
     }
 }
