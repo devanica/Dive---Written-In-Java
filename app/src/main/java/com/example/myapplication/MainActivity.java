@@ -1,17 +1,22 @@
 package com.example.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.net.Uri;
@@ -23,8 +28,9 @@ import android.view.View;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
-import com.example.myapplication.ViewModel.MainActivityViewModel;
+import com.example.myapplication.viewmodel.MainActivityViewModel;
 import com.example.myapplication.adapter.FavTrackAdapter;
 import com.example.myapplication.adapter.RecentTrackAdapter;
 import com.example.myapplication.adapter.TrackAdapter;
@@ -33,7 +39,8 @@ import com.example.myapplication.room.DatabaseRepository;
 import com.example.myapplication.service.MediaPlayerService;
 import java.util.ArrayList;
 import java.util.Objects;
-import static com.example.myapplication.service.MediaPlayerService.player;
+
+import static com.example.myapplication.App.NOTIF_CHANNEL_ID;
 
 public class MainActivity extends AppCompatActivity implements Filterable {
 
@@ -48,10 +55,8 @@ public class MainActivity extends AppCompatActivity implements Filterable {
 
     private DatabaseRepository databaseRepository;
     private MainActivityViewModel mainActivityViewModel;
-
-    private RecyclerView recentRecycler;
-    private RecyclerView favoriteRecycler;
-    private RecyclerView trackRecycler;
+    private RecyclerView trackRecycler, favoriteRecycler, recentRecycler;
+    private TextView favTitle, recentTitle;
 
     private ImageView btnPlay, btnNext, btnPrev;
     private Connection connection;
@@ -65,30 +70,37 @@ public class MainActivity extends AppCompatActivity implements Filterable {
         setContentView(R.layout.activity_main);
 
         connection = new Connection(this);
-        selectIntent = new Intent("sent_track");
+        //selectIntent = new Intent("sent_track");
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(onCloseApp, new IntentFilter("close_app"));
 
         recentRecycler = findViewById(R.id.recycler_recent);
         favoriteRecycler = findViewById(R.id.recycler_favorite);
         trackRecycler = findViewById(R.id.recycler_tracks);
 
+        favTitle = findViewById(R.id.title_favorite);
+        recentTitle = findViewById(R.id.title_recent);
+
         btnPlay = findViewById(R.id.btn_play);
         btnNext = findViewById(R.id.btn_next);
         btnPrev = findViewById(R.id.btn_prev);
+
         // Adapter for recentList.
         recentRecycler.setLayoutManager(new GridLayoutManager(getApplicationContext(), 1,
                                         GridLayoutManager.HORIZONTAL, false));
         recentTrackAdapter = new RecentTrackAdapter(recentList, getApplicationContext());
         recentRecycler.setAdapter(recentTrackAdapter);
-
+        checkIfRecentEmpty();
         // Adapter for favoriteList.
         favoriteRecycler.setLayoutManager(new GridLayoutManager(getApplicationContext(), 1,
                                         GridLayoutManager.HORIZONTAL, false));
         favTrackAdapter = new FavTrackAdapter();
         favoriteRecycler.setAdapter(favTrackAdapter);
+
         mainActivityViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
         mainActivityViewModel.getAllTracks().observe(this, tracks -> {
             // TODO: Update recyclerview
             favTrackAdapter.setFavTracks(tracks);
+            checkIfFavEmpty();
             Toast.makeText(getApplicationContext(), "OnChanged", Toast.LENGTH_SHORT).show();
         });
 
@@ -103,32 +115,32 @@ public class MainActivity extends AppCompatActivity implements Filterable {
                 // Send an Intent with an action named "track-name". The Intent sent should
                 // be received by the MediaPlayerService class.
                 // Create intent with action
-                currPosition = position;
+                /*currPosition = position;
                 selectIntent.putExtra("track", track);
-                Log.v("track_sent","track sent");
+                Log.v("track_sent","track sent");*/
                 // Send local broadcast
-                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(selectIntent);
+                //LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(selectIntent);
+                startForegroundService(track);
             }
 
             @Override
             public void addToFavorites(View view, int position, Track track) {
-                track.addIntofav(!track.getIfAddedIntoFav());
-                if(track.getIfAddedIntoFav()){
-                    mainActivityViewModel.deleteTrack(track);
-                }else {
+                if(!track.getIfAddedIntoFav()){
+                    track.addIntofav(true);
                     mainActivityViewModel.insertTrack(track);
+                    trackAdapter.notifyItemChanged(position);
+                }else {
+                    track.addIntofav(false);
+                    mainActivityViewModel.deleteTrack(track);
+                    trackAdapter.notifyItemChanged(position);
                 }
-
-                Toast.makeText(getApplicationContext(), "added", Toast.LENGTH_SHORT).show();
             }
         });
+
         bindService(new Intent(this, MediaPlayerService.class), connection, BIND_AUTO_CREATE);
 
-        btnPlay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        btnPlay.setOnClickListener(view -> {
 
-            }
         });
 
         btnNext.setOnClickListener(view -> {
@@ -161,42 +173,41 @@ public class MainActivity extends AppCompatActivity implements Filterable {
         });
     }
 
-    /*private void repeat(){
-        repeatBottom.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(isRepeatOn){
-                    isRepeatOn = false;
-                    repeatBottom.setImageResource(R.drawable.ic_repeat);
-                }else{
-                    // Make repeat true.
-                    isRepeatOn = true;
-                    // Make shuffle false.
-                    isShuffleOn = false;
-                    repeatBottom.setImageResource(R.drawable.ic_repeat_one_black);
-                    shuffleBottom.setImageResource(R.drawable.ic_shuffle);
-                }
-            }
-        });
+    private void checkIfRecentEmpty(){
+        if(recentList.isEmpty()){
+            recentRecycler.setVisibility(View.GONE);
+        }else {
+            recentRecycler.setVisibility(View.VISIBLE);
+        }
     }
-    private void shuffle(){
-        shuffleBottom.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(isShuffleOn){
-                    isShuffleOn = false;
-                    shuffleBottom.setImageResource(R.drawable.ic_shuffle);
-                }else{
-                    // Make shuffle true.
-                    isShuffleOn= true;
-                    // Make repeat false.
-                    isRepeatOn = false;
-                    shuffleBottom.setImageResource(R.drawable.ic_shuffle_black);
-                    repeatBottom.setImageResource(R.drawable.ic_repeat);
-                }
-            }
-        });
-    }*/
+
+    private void checkIfFavEmpty(){
+        if(Objects.requireNonNull(mainActivityViewModel.getAllTracks().getValue()).isEmpty()){
+            favoriteRecycler.setVisibility(View.GONE);
+        }else {
+            favoriteRecycler.setVisibility(View.VISIBLE);
+        }
+    }
+
+    // Our handler for received Intents. This will be called whenever an Intent
+    // with an action named "sent_track" is broadcasted.
+    private BroadcastReceiver onCloseApp = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            stopForegroundService();
+        }
+    };
+
+    private void startForegroundService(Track track){
+        Intent serviceIntent = new Intent(this, MediaPlayerService.class);
+        serviceIntent.putExtra("track", track);
+        startService(serviceIntent);
+    }
+
+    private void stopForegroundService(){
+        Intent serviceIntent = new Intent(this, MediaPlayerService.class);
+        stopService(serviceIntent);
+    }
 
     public static class Connection implements ServiceConnection {
         //IN ORDER TO SEND DATA BETWEEN SERVICE AND ACTIVITIES SERVICE NEEDS TO BE CONNECTED TO THE ACTIVITY
@@ -255,7 +266,6 @@ public class MainActivity extends AppCompatActivity implements Filterable {
                 Intent iresults = new Intent(MainActivity.this, FilteredResults.class);
                 iresults.putExtra("results", filteredList);
                 startActivity(iresults);*/
-
                 // TODO: On text changed, primeni u edittext listeneru;
             }
         };

@@ -4,7 +4,6 @@
     android:id="@+id/track_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/colorAccent"
     android:orientation="horizontal">
 
     <ImageView
@@ -29,7 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:singleLine="true"
-            android:textColor="@android:color/black"
+            android:textColor="@color/lightestBlue"
             android:textSize="12sp" />
 
         <TextView
@@ -37,7 +36,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:singleLine="true"
-            android:textSize="10sp" />
+            android:textColor="@color/lightBlue"
+            android:textSize="11sp" />
     </LinearLayout>
 
     <ImageView
@@ -47,6 +47,6 @@
         android:layout_gravity="center"
         android:layout_margin="10dp"
         android:padding="10dp"
-        android:src="@drawable/ic_close"/>
+        android:src="@drawable/ic_add"/>
 
 </LinearLayout>

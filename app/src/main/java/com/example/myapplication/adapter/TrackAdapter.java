@@ -1,31 +1,19 @@
 package com.example.myapplication.adapter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.myapplication.R;
 import com.example.myapplication.model.Track;
-import com.example.myapplication.service.MediaPlayerService;
+import com.example.myapplication.room.DatabaseRepository;
 
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,10 +53,10 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackHolder>
 
         if(track.getIfAddedIntoFav()){
             // set one icon
-
+            holder.addTofavButton.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_remove));
         }else {
             // set another icon
-
+            holder.addTofavButton.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_add));
         }
     }
 
@@ -81,14 +69,14 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackHolder>
 
         TextView trackName, artistName;
         LinearLayout trackContainer;
-        ImageView addtofavButton;
+        ImageView addTofavButton;
 
         public TrackHolder(@NonNull View itemView) {
             super(itemView);
             trackName = itemView.findViewById(R.id.track_name);
             artistName = itemView.findViewById(R.id.artist_name);
             trackContainer = itemView.findViewById(R.id.track_container);
-            addtofavButton = itemView.findViewById(R.id.btn_addtofav);
+            addTofavButton = itemView.findViewById(R.id.btn_addtofav);
 
             selectTrack();
             addToFavorites();
@@ -103,7 +91,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackHolder>
         }
 
         private void addToFavorites(){
-            addtofavButton.setOnClickListener(view -> {
+            addTofavButton.setOnClickListener(view -> {
                 if(onTrackSelectListener != null && getAdapterPosition() != RecyclerView.NO_POSITION){
                     onTrackSelectListener.addToFavorites(itemView, getAdapterPosition(), listOfTracks.get(getAdapterPosition()));
                 }

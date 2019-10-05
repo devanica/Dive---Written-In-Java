@@ -1,12 +1,15 @@
 package com.example.myapplication.service;
 
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.util.Log;
@@ -52,18 +55,28 @@ public class MediaPlayerService extends Service implements
         player.setOnCompletionListener(this);
         player.setOnErrorListener(this);
 
-        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(onTrackSelect, new IntentFilter("sent_track"));
+        //LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(onTrackSelect, new IntentFilter("sent_track"));
         Log.v("track_registered","broadcast registered");
     }
 
-    private void triggerNotificationChannelOne(){
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        track = intent.getParcelableExtra("track");
+        assert track != null;
+        playTrack(track.getId(), getApplicationContext());
+        triggerNotificationChannelOne(track);
+        Log.v("player","start");
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    private void triggerNotificationChannelOne(Track track){
         // here find strings from track info to be set in notification instead of title and content
         Intent intent = new Intent(this, MainActivity.class);
-        //PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
         Intent broadcastIntent = new Intent(this, NotificationReceiver.class);
         broadcastIntent.putExtra("track", track);
-        //PendingIntent closeIntent = PendingIntent.getBroadcast(this, 0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent closeIntent = PendingIntent.getBroadcast(this, 0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Notification notification = new NotificationCompat.Builder(this, NOTIF_CHANNEL_ID)
                 .setContentTitle("Dive")
@@ -72,16 +85,16 @@ public class MediaPlayerService extends Service implements
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
                 .setVibrate(null)
-                //.setContentIntent(pendingIntent)
+                .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
-                //.addAction(R.drawable.ic_close, "close", closeIntent)
+                .addAction(R.drawable.ic_close, "close", closeIntent)
                 .build();
         notificationManagerCompat.notify(1, notification);
     }
 
     // Our handler for received Intents. This will be called whenever an Intent
     // with an action named "sent_track" is broadcasted.
-    private BroadcastReceiver onTrackSelect = new BroadcastReceiver() {
+    /*private BroadcastReceiver onTrackSelect = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             // intent can contain any data
@@ -92,7 +105,7 @@ public class MediaPlayerService extends Service implements
             Log.v("player","try to play");
             playTrack(track.getId(), getApplicationContext());
         }
-    };
+    };*/
 
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
@@ -107,7 +120,7 @@ public class MediaPlayerService extends Service implements
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
         player.start();
-        triggerNotificationChannelOne();
+        //triggerNotificationChannelOne();
         Log.v("player","start");
     }
 
@@ -138,7 +151,7 @@ public class MediaPlayerService extends Service implements
     @Override
     public void onDestroy() {
         // Unregister since the activity is about to be closed.
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(onTrackSelect);
+        //LocalBroadcastManager.getInstance(this).unregisterReceiver(onTrackSelect);
         super.onDestroy();
     }
 
@@ -159,4 +172,10 @@ public class MediaPlayerService extends Service implements
             }
         }
     }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }
+
 }
