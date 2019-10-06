@@ -188,6 +188,7 @@ public class MainActivity extends AppCompatActivity {
                     trackDuration.setText(String.valueOf(mainActivityViewModel.getTrack().getTrackDuration()));
 
                     mainActivityViewModel.setBtnPlay(getResources().getDrawable(R.drawable.ic_pause));
+                    btnPlay.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_pause));
                 }else {
                     nextPosition = 0;
                     startForegroundService(nextTrack);
@@ -198,6 +199,7 @@ public class MainActivity extends AppCompatActivity {
                     trackDuration.setText(String.valueOf(mainActivityViewModel.getTrack().getTrackDuration()));
 
                     mainActivityViewModel.setBtnPlay(getResources().getDrawable(R.drawable.ic_pause));
+                    btnPlay.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_pause));
                 }
             });
 
@@ -213,6 +215,7 @@ public class MainActivity extends AppCompatActivity {
                     trackDuration.setText(String.valueOf(mainActivityViewModel.getTrack().getTrackDuration()));
 
                     mainActivityViewModel.setBtnPlay(getResources().getDrawable(R.drawable.ic_pause));
+                    btnPlay.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_pause));
                 }else {
                     prevPosition = 0;
                     startForegroundService(prevTrack);
@@ -223,6 +226,7 @@ public class MainActivity extends AppCompatActivity {
                     trackDuration.setText(String.valueOf(mainActivityViewModel.getTrack().getTrackDuration()));
 
                     mainActivityViewModel.setBtnPlay(getResources().getDrawable(R.drawable.ic_pause));
+                    btnPlay.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_pause));
                 }
             });
 
