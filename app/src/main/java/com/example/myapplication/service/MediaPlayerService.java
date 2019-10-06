@@ -4,7 +4,6 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +16,8 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.NotificationReceiver;
 import com.example.myapplication.R;
@@ -51,8 +52,28 @@ public class MediaPlayerService extends Service implements
         player.setOnPreparedListener(this);
         player.setOnCompletionListener(this);
         player.setOnErrorListener(this);
+
+        // Register local broadcast receiver
+        //LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(onTrackSelect, new IntentFilter("sent_track"));
         Log.v("track_registered","broadcast registered");
     }
+
+    // Our handler for received Intents. This will be called whenever an Intent
+    // with an action named "sent_track" is broadcasted.
+    /*private BroadcastReceiver onTrackSelect = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // intent can contain any data
+            if(intent.getParcelableExtra("track")!=null){
+                track = intent.getParcelableExtra("track");
+
+            }
+
+            Log.v("player","try to play");
+            playTrack(track.getId(), getApplicationContext());
+        }
+    };*/
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -82,7 +103,7 @@ public class MediaPlayerService extends Service implements
                 .setVibrate(null)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
-                .addAction(R.drawable.ic_close, "close", closeIntent)
+                .addAction(R.drawable.ic_close, "stop", closeIntent)
                 .build();
         notificationManagerCompat.notify(1, notification);
     }
@@ -100,24 +121,7 @@ public class MediaPlayerService extends Service implements
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
         player.start();
-        //triggerNotificationChannelOne();
         Log.v("player","start");
-    }
-
-    private void controlTrack(){
-        if(player.isPlaying()){
-            player.pause();
-        }else {
-            player.start();
-        }
-    }
-
-    private void nextTrack(){
-
-    }
-
-    private void previousTrack(){
-
     }
 
     @Override

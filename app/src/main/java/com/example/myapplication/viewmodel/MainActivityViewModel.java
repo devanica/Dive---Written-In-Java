@@ -5,7 +5,9 @@ import android.app.Application;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.provider.MediaStore;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,11 +25,20 @@ public class MainActivityViewModel extends AndroidViewModel {
     private DatabaseRepository databaseRepository;
     private LiveData<List<Track>> favTracks;
     private Track track;
+    private Drawable btnPlay;
 
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
         databaseRepository = new DatabaseRepository(application);
         favTracks = databaseRepository.getFavTracks();
+    }
+
+    public Drawable getBtnPlay() {
+        return btnPlay;
+    }
+
+    public void setBtnPlay(Drawable btnPlay) {
+        this.btnPlay = btnPlay;
     }
 
     public void insertTrack(Track track){
