@@ -64,10 +64,6 @@ public class MainActivity extends AppCompatActivity {
         connection = new Connection(this);
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(onCloseApp, new IntentFilter("close_app"));
 
-        MusicIntentReceiver receiver = new MusicIntentReceiver();
-        IntentFilter filter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
-        getBaseContext().registerReceiver(receiver, filter);
-
         recentRecycler = findViewById(R.id.recycler_recent);
         favoriteRecycler = findViewById(R.id.recycler_favorite);
         trackRecycler = findViewById(R.id.recycler_tracks);
@@ -119,10 +115,15 @@ public class MainActivity extends AppCompatActivity {
             public void onTrackSelect(View view, int position, Track track) {
                 startForegroundService(track);
                 mainActivityViewModel.setTrack(track);
+                mainActivityViewModel.setBtnPlay(getResources().getDrawable(R.drawable.ic_pause));
+
+                btnPlay.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_pause));
                 artistName.setText(mainActivityViewModel.getTrack().getArtistName());
                 trackName.setText(mainActivityViewModel.getTrack().getTrackName());
                 trackDuration.setText(String.valueOf(mainActivityViewModel.getTrack().getTrackDuration()));
-                mainActivityViewModel.setBtnPlay(getResources().getDrawable(R.drawable.ic_pause));
+
+                btnNext.setClickable(true);
+                btnPrev.setClickable(true);
             }
 
             @Override
@@ -152,6 +153,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        if (mainActivityViewModel.getBtnPlay() != null) {
+            mainActivityViewModel.setBtnPlay(mainActivityViewModel.getBtnPlay());
+            btnPlay.setImageDrawable(mainActivityViewModel.getBtnPlay());
+        }
+
+        btnNext.setClickable(true);
+        btnPrev.setClickable(true);
+
         bindService(new Intent(this, MediaPlayerService.class), connection, BIND_AUTO_CREATE);
 
         btnPlay.setOnClickListener(view -> {
@@ -159,52 +169,62 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Select track to begin", Toast.LENGTH_SHORT).show();
             }else {
                 controlTrack();
+
+                artistName.setText(mainActivityViewModel.getTrack().getArtistName());
+                trackName.setText(mainActivityViewModel.getTrack().getTrackName());
+                trackDuration.setText(String.valueOf(mainActivityViewModel.getTrack().getTrackDuration()));
             }
         });
 
-        if(mainActivityViewModel.getTrack()!=null){
             btnNext.setOnClickListener(view -> {
                 nextPosition = currPosition++;
                 Track nextTrack = trackList.get(nextPosition);
                 if (nextPosition < trackList.size()-1){
-                    // Send local broadcast
                     startForegroundService(nextTrack);
-                    //LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(selectIntent);
                     mainActivityViewModel.setTrack(nextTrack);
+
+                    artistName.setText(mainActivityViewModel.getTrack().getArtistName());
+                    trackName.setText(mainActivityViewModel.getTrack().getTrackName());
+                    trackDuration.setText(String.valueOf(mainActivityViewModel.getTrack().getTrackDuration()));
+
                     mainActivityViewModel.setBtnPlay(getResources().getDrawable(R.drawable.ic_pause));
                 }else {
                     nextPosition = 0;
                     startForegroundService(nextTrack);
-                    //LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(selectIntent);
                     mainActivityViewModel.setTrack(nextTrack);
+
+                    artistName.setText(mainActivityViewModel.getTrack().getArtistName());
+                    trackName.setText(mainActivityViewModel.getTrack().getTrackName());
+                    trackDuration.setText(String.valueOf(mainActivityViewModel.getTrack().getTrackDuration()));
+
                     mainActivityViewModel.setBtnPlay(getResources().getDrawable(R.drawable.ic_pause));
                 }
             });
-        }else {
-            Toast.makeText(getApplicationContext(), "Select track to begin", Toast.LENGTH_SHORT).show();
-        }
 
-        if(mainActivityViewModel.getTrack()!=null){
             btnPrev.setOnClickListener(view -> {
                 prevPosition = currPosition--;
                 Track prevTrack = trackList.get(prevPosition);
                 if (prevPosition > 0){
                     startForegroundService(prevTrack);
-                    //LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(selectIntent);
                     mainActivityViewModel.setTrack(prevTrack);
+
+                    artistName.setText(mainActivityViewModel.getTrack().getArtistName());
+                    trackName.setText(mainActivityViewModel.getTrack().getTrackName());
+                    trackDuration.setText(String.valueOf(mainActivityViewModel.getTrack().getTrackDuration()));
+
                     mainActivityViewModel.setBtnPlay(getResources().getDrawable(R.drawable.ic_pause));
                 }else {
                     prevPosition = 0;
-                    selectIntent.putExtra("track", prevTrack);
                     startForegroundService(prevTrack);
-                    //LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(selectIntent);
                     mainActivityViewModel.setTrack(prevTrack);
+
+                    artistName.setText(mainActivityViewModel.getTrack().getArtistName());
+                    trackName.setText(mainActivityViewModel.getTrack().getTrackName());
+                    trackDuration.setText(String.valueOf(mainActivityViewModel.getTrack().getTrackDuration()));
+
                     mainActivityViewModel.setBtnPlay(getResources().getDrawable(R.drawable.ic_pause));
                 }
             });
-        }else {
-            Toast.makeText(getApplicationContext(), "Select track to begin", Toast.LENGTH_SHORT).show();
-        }
 
     }
 
@@ -236,9 +256,11 @@ public class MainActivity extends AppCompatActivity {
     private void controlTrack(){
         if(player.isPlaying()){
             player.pause();
+            mainActivityViewModel.setBtnPlay(getResources().getDrawable(R.drawable.ic_play));
             btnPlay.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_play));
         }else {
             player.start();
+            mainActivityViewModel.setBtnPlay(getResources().getDrawable(R.drawable.ic_pause));
             btnPlay.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_pause));
         }
     }
@@ -276,33 +298,6 @@ public class MainActivity extends AppCompatActivity {
             if (contextReference != null) {
                 ((MainActivity) contextReference).isBound = false;
                 Toast.makeText(contextReference, "Service Disconnected", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    // This is headset intent receiver.
-    private class MusicIntentReceiver extends BroadcastReceiver {
-        @Override public void onReceive(Context context, Intent intent) {
-            if (Objects.equals(intent.getAction(), Intent.ACTION_HEADSET_PLUG)) {
-                int state = intent.getIntExtra("state", -1);
-                switch (state) {
-                    case 0:
-                        Log.d("TAG", "Headset is unplugged.");
-                        if(player.isPlaying()){
-                            player.pause();
-                            mainActivityViewModel.setBtnPlay(getResources().getDrawable(R.drawable.ic_play));
-                        }
-                        break;
-                    case 1:
-                        Log.d("TAG", "Headset is plugged.");
-                        if(player.isPlaying()){
-                            player.pause();
-                            mainActivityViewModel.setBtnPlay(getResources().getDrawable(R.drawable.ic_play));
-                        }
-                        break;
-                    default:
-                        Log.d("TAG", "Unknown headset state.");
-                }
             }
         }
     }
@@ -349,7 +344,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //unbindService(connection);
+        unbindService(connection);
     }
 
 }
