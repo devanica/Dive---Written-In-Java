@@ -17,7 +17,6 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.NotificationReceiver;
 import com.example.myapplication.R;
@@ -47,15 +46,11 @@ public class MediaPlayerService extends Service implements
         super.onCreate();
 
         notificationManagerCompat = NotificationManagerCompat.from(this);
-        // Register to receive messages.
-        // We are registering an observer (onTrackSelect) to receive Intents
-        // with actions named "sent_track".
+
         player = new MediaPlayer();
         player.setOnPreparedListener(this);
         player.setOnCompletionListener(this);
         player.setOnErrorListener(this);
-
-        //LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(onTrackSelect, new IntentFilter("sent_track"));
         Log.v("track_registered","broadcast registered");
     }
 
@@ -92,21 +87,6 @@ public class MediaPlayerService extends Service implements
         notificationManagerCompat.notify(1, notification);
     }
 
-    // Our handler for received Intents. This will be called whenever an Intent
-    // with an action named "sent_track" is broadcasted.
-    /*private BroadcastReceiver onTrackSelect = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // intent can contain any data
-            if(intent.getParcelableExtra("track")!=null){
-                track = intent.getParcelableExtra("track");
-            }
-
-            Log.v("player","try to play");
-            playTrack(track.getId(), getApplicationContext());
-        }
-    };*/
-
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
 
@@ -137,14 +117,6 @@ public class MediaPlayerService extends Service implements
     }
 
     private void previousTrack(){
-
-    }
-
-    private void repeatTrack(){
-
-    }
-
-    private void repeatAll(){
 
     }
 

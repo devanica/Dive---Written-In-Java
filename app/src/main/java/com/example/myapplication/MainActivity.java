@@ -92,11 +92,10 @@ public class MainActivity extends AppCompatActivity implements Filterable {
         favoriteRecycler.setAdapter(favTrackAdapter);
 
         mainActivityViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
-        mainActivityViewModel.getAllTracks().observe(this, tracks -> {
+        mainActivityViewModel.getFavTracks().observe(this, tracks -> {
             // TODO: Update recyclerview
             favTrackAdapter.setFavTracks(tracks);
             checkIfFavEmpty();
-            Toast.makeText(getApplicationContext(), "OnChanged", Toast.LENGTH_SHORT).show();
         });
 
         // Adapter for trackList/filteredList.
@@ -107,37 +106,33 @@ public class MainActivity extends AppCompatActivity implements Filterable {
         trackAdapter.setOnTrackSelectListener(new TrackAdapter.onTrackSelectListener() {
             @Override
             public void onTrackSelect(View view, int position, Track track) {
-                // Send an Intent with an action named "track-name". The Intent sent should
-                // be received by the MediaPlayerService class.
-                // Create intent with action
-                /*currPosition = position;
-                selectIntent.putExtra("track", track);
-                Log.v("track_sent","track sent");*/
-                // Send local broadcast
-                //LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(selectIntent);
                 startForegroundService(track);
             }
 
             @Override
             public void addToFavorites(View view, int position, Track track) {
+                // here we need to somehow check if the idem with this id exisr in db
                 Track roomTrack = mainActivityViewModel.getTrack(track.getId());
-                if(track.getId()==roomTrack.getId()){
-                    mainActivityViewModel.deleteTrack(track);
-                    trackAdapter.notifyItemChanged(position);
-                }else {
+                // Send an Intent with an action named "track-name". The Intent sent should
+                // be received by the MediaPlayerService class.
+                // Create intent with action
+                currPosition = position;
+                selectIntent.putExtra("track", track);
+                if(roomTrack!=null){
+                    if(track.getId()==roomTrack.getId()){
+                        mainActivityViewModel.deleteTrack(track);
+                    }
+                } else {
                     mainActivityViewModel.insertTrack(track);
-                    trackAdapter.notifyItemChanged(position);
+                    // Send local broadcast
+                    //LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(selectIntent);
                 }
+            }
 
-                /*if(!track.isAddedIntoFav()){
-                    track.setAddedIntoFav(true);
-                    mainActivityViewModel.insertTrack(track);
-                    trackAdapter.notifyItemChanged(position);
-                }else {
-                    track.setAddedIntoFav(false);
-                    mainActivityViewModel.deleteTrack(track);
-                    trackAdapter.notifyItemChanged(position);
-                }*/
+            @Override
+            public void deleteTrack(View view, int position, Track track) {
+                deleteSelectedTrack(track.getId());
+                trackAdapter.notifyItemRemoved(position);
             }
         });
 
@@ -186,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements Filterable {
     }
 
     private void checkIfFavEmpty(){
-        if(Objects.requireNonNull(mainActivityViewModel.getAllTracks().getValue()).isEmpty()){
+        if(Objects.requireNonNull(mainActivityViewModel.getFavTracks().getValue()).isEmpty()){
             favoriteRecycler.setVisibility(View.GONE);
         }else {
             favoriteRecycler.setVisibility(View.VISIBLE);
@@ -308,10 +303,9 @@ public class MainActivity extends AppCompatActivity implements Filterable {
         }
     }
 
-    private void deleteTrack(int id){
+    private void deleteSelectedTrack(long id){
         Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
         getApplicationContext().getContentResolver().delete(uri, null, null);
-        onBackPressed();
     }
 
     @Override

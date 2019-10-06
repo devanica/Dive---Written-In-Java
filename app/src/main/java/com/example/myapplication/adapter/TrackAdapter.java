@@ -12,16 +12,11 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.R;
 import com.example.myapplication.model.Track;
-import com.example.myapplication.room.DatabaseRepository;
-import com.example.myapplication.viewmodel.MainActivityViewModel;
-
 import java.util.ArrayList;
-import java.util.List;
 
 public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackHolder> {
 
     private Context mContext;
-    private DatabaseRepository databaseRepository;
     private ArrayList<Track> listOfTracks;
     private onTrackSelectListener onTrackSelectListener;
 
@@ -33,6 +28,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackHolder>
     public interface onTrackSelectListener{
         void onTrackSelect(View view, int position, Track track);
         void addToFavorites(View view, int position, Track track);
+        void deleteTrack(View view, int position, Track track);
     }
 
     public void setOnTrackSelectListener(onTrackSelectListener onTrackSelectListener) {
@@ -52,16 +48,24 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackHolder>
 
         holder.trackName.setText(track.getTrackName());
         holder.artistName.setText(track.getArtistName());
-
-
-        if(track.isAddedIntoFav()){
-            // set one icon
-            holder.addTofavButton.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_remove));
-        }else {
-            // set another icon
-            holder.addTofavButton.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_add));
-        }
+        holder.addToFavButton.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_add));
+        // Register to receive messages.
+        // We are registering an observer (onTrackSelect) to receive Intents
+        // with actions named "sent_track".
+        //LocalBroadcastManager.getInstance(mContext).registerReceiver(onTrackSelect, new IntentFilter("sent_track"));
     }
+
+    /*// Our handler for received Intents. This will be called whenever an Intent
+    // with an action named "sent_track" is broadcasted.
+    private BroadcastReceiver onTrackSelect = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // intent can contain any data
+            if(intent.getParcelableExtra("track")!=null){
+                roomTrack = intent.getParcelableExtra("track");
+            }
+        }
+    };*/
 
     @Override
     public int getItemCount() {
@@ -72,17 +76,19 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackHolder>
 
         TextView trackName, artistName;
         LinearLayout trackContainer;
-        ImageView addTofavButton;
+        ImageView addToFavButton, deleteButton;
 
         public TrackHolder(@NonNull View itemView) {
             super(itemView);
             trackName = itemView.findViewById(R.id.track_name);
             artistName = itemView.findViewById(R.id.artist_name);
             trackContainer = itemView.findViewById(R.id.track_container);
-            addTofavButton = itemView.findViewById(R.id.btn_addtofav);
+            addToFavButton = itemView.findViewById(R.id.btn_addtofav);
+            deleteButton = itemView.findViewById(R.id.btn_delete);
 
             selectTrack();
             addToFavorites();
+            deleteTrack();
         }
 
         private void selectTrack(){
@@ -94,38 +100,20 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackHolder>
         }
 
         private void addToFavorites(){
-            addTofavButton.setOnClickListener(view -> {
+            addToFavButton.setOnClickListener(view -> {
                 if(onTrackSelectListener != null && getAdapterPosition() != RecyclerView.NO_POSITION){
                     onTrackSelectListener.addToFavorites(itemView, getAdapterPosition(), listOfTracks.get(getAdapterPosition()));
                 }
             });
         }
+
+        private void deleteTrack(){
+            deleteButton.setOnClickListener(view -> {
+                if(onTrackSelectListener != null && getAdapterPosition() != RecyclerView.NO_POSITION){
+                    onTrackSelectListener.deleteTrack(itemView, getAdapterPosition(), listOfTracks.get(getAdapterPosition()));
+                }
+            });
+        }
     }
 
-
-
-    /*private void showPopup(View view){
-        PopupMenu popupMenu = new PopupMenu(mContext, view);
-        MenuInflater menuInflater = popupMenu.getMenuInflater();
-        menuInflater.inflate(R.menu.actions, popupMenu.getMenu());
-
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                switch (menuItem.getItemId()){
-                    case R.id.delete_thisTrack:
-                        Intent deleteIntent = new Intent(mContext, DeleteTrack.class);
-                        mContext.startActivity(deleteIntent);
-                        return true;
-                    case R.id.add_toFavourites:
-                        Intent insertIntent = new Intent(mContext, InsertTrack.class);
-                        mContext.startActivity(insertIntent);
-                        return true;
-                    default:
-                        return false;
-                }
-            }
-        });
-        popupMenu.show();
-    }*/
 }
