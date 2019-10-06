@@ -21,8 +21,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.MediaStore;
 import android.view.View;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,29 +29,25 @@ import com.example.myapplication.adapter.FavTrackAdapter;
 import com.example.myapplication.adapter.RecentTrackAdapter;
 import com.example.myapplication.adapter.TrackAdapter;
 import com.example.myapplication.model.Track;
-import com.example.myapplication.room.DatabaseRepository;
 import com.example.myapplication.service.MediaPlayerService;
 import java.util.ArrayList;
 import java.util.Objects;
 import static com.example.myapplication.App.NOTIF_CHANNEL_ID;
 
-public class MainActivity extends AppCompatActivity implements Filterable {
+public class MainActivity extends AppCompatActivity {
 
-    private ArrayList<Track> favoriteList = new ArrayList<>();
     private ArrayList<Track> recentList = new ArrayList<>();
     private ArrayList<Track> trackList = new ArrayList<>();
-    private ArrayList<Track> filteredList = new ArrayList<>();
 
     private RecentTrackAdapter recentTrackAdapter;
     private TrackAdapter trackAdapter;
     private FavTrackAdapter favTrackAdapter;
 
-    private DatabaseRepository databaseRepository;
     private MainActivityViewModel mainActivityViewModel;
     private RecyclerView trackRecycler, favoriteRecycler, recentRecycler;
-    private TextView favTitle, recentTitle;
+    private TextView favTitle, recentTitle, artistName, trackName, trackDuration;
 
-    private ImageView btnPlay, btnNext, btnPrev;
+    private ImageView btnPlay, btnNext, btnPrev, imageCurrTrack;
     private Connection connection;
     public boolean isBound = false;
     public static int currPosition, nextPosition, prevPosition;
@@ -75,9 +69,14 @@ public class MainActivity extends AppCompatActivity implements Filterable {
         favTitle = findViewById(R.id.title_favorite);
         recentTitle = findViewById(R.id.title_recent);
 
+        artistName = findViewById(R.id.artist_name);
+        trackName = findViewById(R.id.track_name);
+        trackDuration = findViewById(R.id.track_duration);
+
         btnPlay = findViewById(R.id.btn_play);
         btnNext = findViewById(R.id.btn_next);
         btnPrev = findViewById(R.id.btn_prev);
+        imageCurrTrack = findViewById(R.id.image_curr_track);
 
         // Adapter for recentList.
         recentRecycler.setLayoutManager(new GridLayoutManager(getApplicationContext(), 1,
@@ -98,6 +97,12 @@ public class MainActivity extends AppCompatActivity implements Filterable {
             checkIfFavEmpty();
         });
 
+        if (mainActivityViewModel.getTrack() != null) {
+            artistName.setText(mainActivityViewModel.getTrack().getArtistName());
+            trackName.setText(mainActivityViewModel.getTrack().getTrackName());
+            trackDuration.setText(String.valueOf(mainActivityViewModel.getTrack().getTrackDuration()));
+        }
+
         // Adapter for trackList/filteredList.
         getTracksFromStorage();
         trackRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
@@ -107,6 +112,10 @@ public class MainActivity extends AppCompatActivity implements Filterable {
             @Override
             public void onTrackSelect(View view, int position, Track track) {
                 startForegroundService(track);
+                mainActivityViewModel.setTrack(track);
+                artistName.setText(mainActivityViewModel.getTrack().getArtistName());
+                trackName.setText(mainActivityViewModel.getTrack().getTrackName());
+                trackDuration.setText(String.valueOf(mainActivityViewModel.getTrack().getTrackDuration()));
             }
 
             @Override
@@ -116,8 +125,8 @@ public class MainActivity extends AppCompatActivity implements Filterable {
                 // Send an Intent with an action named "track-name". The Intent sent should
                 // be received by the MediaPlayerService class.
                 // Create intent with action
-                currPosition = position;
-                selectIntent.putExtra("track", track);
+                //currPosition = position;
+                //selectIntent.putExtra("track", track);
                 if(roomTrack!=null){
                     if(track.getId()==roomTrack.getId()){
                         mainActivityViewModel.deleteTrack(track);
@@ -234,47 +243,12 @@ public class MainActivity extends AppCompatActivity implements Filterable {
         }
     }
 
-    // Filter for search interface
-    // TODO: moguce resenje, ima boljih...
-    @Override
-    public Filter getFilter() {
-        return new Filter() {
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                FilterResults results = new FilterResults();
-
-                if (constraint == null || constraint.length() == 0) {
-                    results.count = trackList.size();
-                    results.values = trackList;
-                } else {
-                    // Do the search
-                    filteredList = new ArrayList<Track>();
-                    String searchedTrack = constraint.toString().toUpperCase();
-                    for (Track s : trackList)
-                        if (s.getTrackName().toUpperCase().contains(searchedTrack) ||
-                                s.getArtistName().toUpperCase().contains(searchedTrack)) filteredList.add(s);
-                    results.count = filteredList.size();
-                    results.values = filteredList;
-                }
-                return results;
-            }
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-                /*filteredList = (ArrayList<Track>)results.values;
-                // Send this to new array and into new activity. It's the only way.
-                Intent iresults = new Intent(MainActivity.this, FilteredResults.class);
-                iresults.putExtra("results", filteredList);
-                startActivity(iresults);*/
-                // TODO: On text changed, primeni u edittext listeneru;
-            }
-        };
-    }
-
     // Get tracks from storage
     private void getTracksFromStorage(){
         trackList = new ArrayList<Track>();
         ContentResolver contentResolver = Objects.requireNonNull(getApplicationContext()).getContentResolver();
-        Cursor cursor = contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null,
+        Cursor cursor = contentResolver.query(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null,
                 MediaStore.Audio.Media.IS_MUSIC, null,
                 MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
 

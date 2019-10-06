@@ -22,7 +22,6 @@ public class MainActivityViewModel extends AndroidViewModel {
 
     private DatabaseRepository databaseRepository;
     private LiveData<List<Track>> favTracks;
-    private LiveData<List<Track>> allTracks;
     private Track track;
 
     public MainActivityViewModel(@NonNull Application application) {
@@ -55,8 +54,11 @@ public class MainActivityViewModel extends AndroidViewModel {
         return databaseRepository.getTrack(id);
     }
 
-    public LiveData<List<Track>> getAllTracks(){
-        return allTracks;
+    public Track getTrack() {
+        return track;
     }
 
+    public void setTrack(Track track) {
+        this.track = track;
+    }
 }
