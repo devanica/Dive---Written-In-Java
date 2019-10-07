@@ -136,18 +136,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void addToFavorites(View view, int position, Track track) {
-                // here we need to somehow check if the idem with this id exisr in db
-                Track roomTrack = mainActivityViewModel.getTrack(track.getId());
-                // Send an Intent with an action named "track-name". The Intent sent should
-                // be received by the MediaPlayerService class.
-                // Create intent with action
                 currPosition = position;
-                //selectIntent.putExtra("track", track);
-                if(roomTrack!=null){
-                    if(track.getId()==roomTrack.getId()){
-                        mainActivityViewModel.deleteTrack(track);
-                    }
-                }
+                mainActivityViewModel.insertTrack(track);
             }
 
             @Override

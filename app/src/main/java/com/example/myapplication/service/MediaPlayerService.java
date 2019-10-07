@@ -53,27 +53,8 @@ public class MediaPlayerService extends Service implements
         player.setOnCompletionListener(this);
         player.setOnErrorListener(this);
 
-        // Register local broadcast receiver
-        //LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(onTrackSelect, new IntentFilter("sent_track"));
         Log.v("track_registered","broadcast registered");
     }
-
-    // Our handler for received Intents. This will be called whenever an Intent
-    // with an action named "sent_track" is broadcasted.
-    /*private BroadcastReceiver onTrackSelect = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // intent can contain any data
-            if(intent.getParcelableExtra("track")!=null){
-                track = intent.getParcelableExtra("track");
-
-            }
-
-            Log.v("player","try to play");
-            playTrack(track.getId(), getApplicationContext());
-        }
-    };*/
-
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -98,11 +79,9 @@ public class MediaPlayerService extends Service implements
                 .setContentTitle("Dive")
                 .setContentText(track.getTrackName())
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
-                .setVibrate(null)
                 .setContentIntent(pendingIntent)
-                .setAutoCancel(true)
                 .addAction(R.drawable.ic_close, "stop", closeIntent)
                 .build();
         notificationManagerCompat.notify(1, notification);
