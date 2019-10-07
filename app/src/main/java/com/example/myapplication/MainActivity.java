@@ -287,8 +287,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static class Connection implements ServiceConnection {
-        //IN ORDER TO SEND DATA BETWEEN SERVICE AND ACTIVITIES SERVICE NEEDS TO BE CONNECTED TO THE ACTIVITY
-        //AND THIS IS HOW IT'S DONE.
         Context contextReference;
 
         public Connection(Context contextReference) {
