@@ -49,23 +49,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackHolder>
         holder.trackName.setText(track.getTrackName());
         holder.artistName.setText(track.getArtistName());
         holder.addToFavButton.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_add));
-        // Register to receive messages.
-        // We are registering an observer (onTrackSelect) to receive Intents
-        // with actions named "sent_track".
-        //LocalBroadcastManager.getInstance(mContext).registerReceiver(onTrackSelect, new IntentFilter("sent_track"));
     }
-
-    /*// Our handler for received Intents. This will be called whenever an Intent
-    // with an action named "sent_track" is broadcasted.
-    private BroadcastReceiver onTrackSelect = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // intent can contain any data
-            if(intent.getParcelableExtra("track")!=null){
-                roomTrack = intent.getParcelableExtra("track");
-            }
-        }
-    };*/
 
     @Override
     public int getItemCount() {

@@ -25,14 +25,13 @@
             android:padding="5dp">
 
             <ImageView
-                android:id="@+id/btn_play"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:id="@+id/btn_delete"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="10dp"
                 android:layout_marginTop="10dp"
-                android:src="@drawable/ic_play"
-                android:tint="@color/accentBlue"
-                android:layout_gravity="start"
-                android:visibility="invisible"/>
+                android:src="@drawable/ic_close"
+                android:layout_gravity="end"/>
 
             <TextView
                 android:id="@+id/recent_track_name"

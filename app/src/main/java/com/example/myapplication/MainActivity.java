@@ -105,6 +105,14 @@ public class MainActivity extends AppCompatActivity {
             trackDuration.setText(String.valueOf(mainActivityViewModel.getTrack().getTrackDuration()));
         }
 
+        favTrackAdapter.setOnTrackSelectListener(new FavTrackAdapter.OnFavTrackSelectListener() {
+            @Override
+            public void deleteTrack(View view, int position, Track track) {
+                mainActivityViewModel.deleteTrack(track);
+                trackAdapter.notifyItemRemoved(position);
+            }
+        });
+
         // Adapter for trackList/filteredList.
         getTracksFromStorage();
         trackRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
@@ -139,10 +147,6 @@ public class MainActivity extends AppCompatActivity {
                     if(track.getId()==roomTrack.getId()){
                         mainActivityViewModel.deleteTrack(track);
                     }
-                } else {
-                    mainActivityViewModel.insertTrack(track);
-                    // Send local broadcast
-                    //LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(selectIntent);
                 }
             }
 
