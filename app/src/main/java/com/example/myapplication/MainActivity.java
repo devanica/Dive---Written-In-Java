@@ -54,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
     private Connection connection;
     public boolean isBound = false;
     public static int currPosition, nextPosition, prevPosition;
-    private Intent selectIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +109,19 @@ public class MainActivity extends AppCompatActivity {
             public void deleteTrack(View view, int position, Track track) {
                 mainActivityViewModel.deleteTrack(track);
                 trackAdapter.notifyItemRemoved(position);
+            }
+
+            @Override
+            public void selectTrack(View view, int position, Track track) {
+                startForegroundService(track);
+                mainActivityViewModel.setTrack(track);
+
+                artistName.setText(mainActivityViewModel.getTrack().getArtistName());
+                trackName.setText(mainActivityViewModel.getTrack().getTrackName());
+                trackDuration.setText(String.valueOf(mainActivityViewModel.getTrack().getTrackDuration()));
+
+                mainActivityViewModel.setBtnPlay(getResources().getDrawable(R.drawable.ic_pause));
+                btnPlay.setImageDrawable(mainActivityViewModel.getBtnPlay());
             }
         });
 
@@ -182,9 +194,9 @@ public class MainActivity extends AppCompatActivity {
                     trackDuration.setText(String.valueOf(mainActivityViewModel.getTrack().getTrackDuration()));
 
                     mainActivityViewModel.setBtnPlay(getResources().getDrawable(R.drawable.ic_pause));
-                    btnPlay.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_pause));
+                    btnPlay.setImageDrawable(mainActivityViewModel.getBtnPlay());
                 }else {
-                    nextPosition = 0;
+                    nextPosition = 1;
                     startForegroundService(nextTrack);
                     mainActivityViewModel.setTrack(nextTrack);
 
@@ -193,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
                     trackDuration.setText(String.valueOf(mainActivityViewModel.getTrack().getTrackDuration()));
 
                     mainActivityViewModel.setBtnPlay(getResources().getDrawable(R.drawable.ic_pause));
-                    btnPlay.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_pause));
+                    btnPlay.setImageDrawable(mainActivityViewModel.getBtnPlay());
                 }
             });
 
@@ -209,9 +221,9 @@ public class MainActivity extends AppCompatActivity {
                     trackDuration.setText(String.valueOf(mainActivityViewModel.getTrack().getTrackDuration()));
 
                     mainActivityViewModel.setBtnPlay(getResources().getDrawable(R.drawable.ic_pause));
-                    btnPlay.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_pause));
+                    btnPlay.setImageDrawable(mainActivityViewModel.getBtnPlay());
                 }else {
-                    prevPosition = 0;
+                    prevPosition = 1;
                     startForegroundService(prevTrack);
                     mainActivityViewModel.setTrack(prevTrack);
 
@@ -220,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
                     trackDuration.setText(String.valueOf(mainActivityViewModel.getTrack().getTrackDuration()));
 
                     mainActivityViewModel.setBtnPlay(getResources().getDrawable(R.drawable.ic_pause));
-                    btnPlay.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_pause));
+                    btnPlay.setImageDrawable(mainActivityViewModel.getBtnPlay());
                 }
             });
 
@@ -255,11 +267,11 @@ public class MainActivity extends AppCompatActivity {
         if(player.isPlaying()){
             player.pause();
             mainActivityViewModel.setBtnPlay(getResources().getDrawable(R.drawable.ic_play));
-            btnPlay.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_play));
+            btnPlay.setImageDrawable(mainActivityViewModel.getBtnPlay());
         }else {
             player.start();
             mainActivityViewModel.setBtnPlay(getResources().getDrawable(R.drawable.ic_pause));
-            btnPlay.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_pause));
+            btnPlay.setImageDrawable(mainActivityViewModel.getBtnPlay());
         }
     }
 

@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,6 +24,7 @@ public class FavTrackAdapter extends RecyclerView.Adapter<FavTrackAdapter.FavTra
 
     public interface OnFavTrackSelectListener{
         void deleteTrack(View view, int position, Track track);
+        void selectTrack(View view, int position, Track track);
     }
 
     public void setOnTrackSelectListener(OnFavTrackSelectListener onFavTrackSelectListener) {
@@ -56,14 +58,17 @@ public class FavTrackAdapter extends RecyclerView.Adapter<FavTrackAdapter.FavTra
 
         TextView recentTrackName, recentArtistName;
         ImageView deleteTrack;
+        RelativeLayout favTrackContainer;
 
         public FavTrackHolder(@NonNull View itemView) {
             super(itemView);
             recentTrackName = itemView.findViewById(R.id.recent_track_name);
             recentArtistName = itemView.findViewById(R.id.recent_artist_name);
             deleteTrack = itemView.findViewById(R.id.btn_delete);
+            favTrackContainer = itemView.findViewById(R.id.fav_track_container);
 
             deleteTrack();
+            selectTrack();
         }
 
         private void deleteTrack(){
@@ -73,6 +78,15 @@ public class FavTrackAdapter extends RecyclerView.Adapter<FavTrackAdapter.FavTra
                 }
             });
         }
+
+        private void selectTrack(){
+            favTrackContainer.setOnClickListener(view -> {
+                if(onFavTrackSelectListener != null && getAdapterPosition() != RecyclerView.NO_POSITION){
+                    onFavTrackSelectListener.selectTrack(itemView, getAdapterPosition(), tracks.get(getAdapterPosition()));
+                }
+            });
+        }
+
     }
 
 }
