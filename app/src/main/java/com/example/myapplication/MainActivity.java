@@ -21,7 +21,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -79,12 +78,6 @@ public class MainActivity extends AppCompatActivity {
         btnPrev = findViewById(R.id.btn_prev);
         imageCurrTrack = findViewById(R.id.image_curr_track);
 
-        // Adapter for recentList.
-        recentRecycler.setLayoutManager(new GridLayoutManager(getApplicationContext(), 1,
-                                        GridLayoutManager.HORIZONTAL, false));
-        recentTrackAdapter = new RecentTrackAdapter(recentList, getApplicationContext());
-        recentRecycler.setAdapter(recentTrackAdapter);
-        checkIfRecentEmpty();
         // Adapter for favoriteList.
         favoriteRecycler.setLayoutManager(new GridLayoutManager(getApplicationContext(), 1,
                                         GridLayoutManager.HORIZONTAL, false));
@@ -108,7 +101,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void deleteTrack(View view, int position, Track track) {
                 mainActivityViewModel.deleteTrack(track);
-                trackAdapter.notifyItemRemoved(position);
             }
 
             @Override
@@ -155,10 +147,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void deleteTrack(View view, int position, Track track) {
                 deleteSelectedTrack(track.getId());
+                mainActivityViewModel.deleteTrack(track);
                 trackAdapter.notifyItemRemoved(position);
             }
         });
-
 
         if (mainActivityViewModel.getBtnPlay() != null) {
             mainActivityViewModel.setBtnPlay(mainActivityViewModel.getBtnPlay());
@@ -236,14 +228,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-    }
-
-    private void checkIfRecentEmpty(){
-        if(recentList.isEmpty()){
-            recentRecycler.setVisibility(View.GONE);
-        }else {
-            recentRecycler.setVisibility(View.VISIBLE);
-        }
     }
 
     private void checkIfFavEmpty(){

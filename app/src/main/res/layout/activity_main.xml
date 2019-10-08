@@ -60,31 +60,10 @@
             </RelativeLayout>
 
             <TextView
-                android:id="@+id/title_recent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/layout_curr_track"
-                android:fontFamily="@font/ubuntu_bold"
-                android:padding="10dp"
-                android:text="@string/recent_tracks"
-                android:textColor="@color/lightestBlue"
-                android:textSize="20sp"
-                android:textStyle="bold">
-            </TextView>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_recent"
-                android:layout_width="match_parent"
-                android:layout_height="120dp"
-                android:layout_below="@+id/title_recent"
-                tools:listitem="@layout/recent_track">
-            </androidx.recyclerview.widget.RecyclerView>
-
-            <TextView
                 android:id="@+id/title_favorite"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/recycler_recent"
+                android:layout_below="@+id/layout_curr_track"
                 android:fontFamily="@font/ubuntu_bold"
                 android:padding="10dp"
                 android:text="@string/favorite_tracks"
@@ -117,7 +96,7 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_tracks"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="match_parent"
                 android:layout_below="@+id/title_tracks"
                 android:layout_alignParentBottom="true"
                 android:paddingBottom="70dp"
