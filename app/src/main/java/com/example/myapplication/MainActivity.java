@@ -46,10 +46,10 @@ public class MainActivity extends AppCompatActivity {
     private FavTrackAdapter favTrackAdapter;
 
     private MainActivityViewModel mainActivityViewModel;
-    private RecyclerView trackRecycler, favoriteRecycler, recentRecycler;
-    private TextView favTitle, recentTitle, artistName, trackName, trackDuration;
+    private RecyclerView trackRecycler, favoriteRecycler;
+    private TextView favTitle, artistName, trackName, trackDuration;
 
-    private ImageView btnPlay, btnNext, btnPrev, imageCurrTrack;
+    private ImageView btnPlay, btnNext, btnPrev;
     private Connection connection;
     public boolean isBound = false;
     public static int currPosition, nextPosition, prevPosition;
@@ -62,13 +62,10 @@ public class MainActivity extends AppCompatActivity {
         connection = new Connection(this);
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(onCloseApp, new IntentFilter("close_app"));
 
-        recentRecycler = findViewById(R.id.recycler_recent);
         favoriteRecycler = findViewById(R.id.recycler_favorite);
         trackRecycler = findViewById(R.id.recycler_tracks);
 
         favTitle = findViewById(R.id.title_favorite);
-        recentTitle = findViewById(R.id.title_recent);
-
         artistName = findViewById(R.id.artist_name);
         trackName = findViewById(R.id.track_name);
         trackDuration = findViewById(R.id.track_duration);
@@ -76,7 +73,6 @@ public class MainActivity extends AppCompatActivity {
         btnPlay = findViewById(R.id.btn_play);
         btnNext = findViewById(R.id.btn_next);
         btnPrev = findViewById(R.id.btn_prev);
-        imageCurrTrack = findViewById(R.id.image_curr_track);
 
         // Adapter for favoriteList.
         favoriteRecycler.setLayoutManager(new GridLayoutManager(getApplicationContext(), 1,
