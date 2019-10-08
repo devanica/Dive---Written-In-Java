@@ -1,13 +1,11 @@
-package com.example.myapplication.service;
+package com.example.Dive.service;
 
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.media.MediaPlayer;
 import android.os.IBinder;
@@ -16,15 +14,14 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.example.myapplication.MainActivity;
-import com.example.myapplication.NotificationReceiver;
-import com.example.myapplication.R;
-import com.example.myapplication.model.Track;
+import com.example.Dive.MainActivity;
+import com.example.Dive.NotificationReceiver;
+import com.example.Dive.R;
+import com.example.Dive.model.Track;
 import java.io.IOException;
 
-import static com.example.myapplication.App.NOTIF_CHANNEL_ID;
+import static com.example.Dive.App.NOTIF_CHANNEL_ID;
 
 public class MediaPlayerService extends Service implements
         MediaPlayer.OnCompletionListener,

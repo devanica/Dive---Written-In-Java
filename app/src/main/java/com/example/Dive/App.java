@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.Dive;
 
 import android.app.Application;
 import android.app.NotificationChannel;

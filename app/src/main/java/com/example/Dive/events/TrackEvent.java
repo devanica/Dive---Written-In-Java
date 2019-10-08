@@ -1,6 +1,6 @@
-package com.example.myapplication.events;
+package com.example.Dive.events;
 
-import com.example.myapplication.model.Track;
+import com.example.Dive.model.Track;
 
 public class TrackEvent {
 

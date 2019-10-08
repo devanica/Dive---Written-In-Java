@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.Dive;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -25,16 +25,16 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.example.myapplication.viewmodel.MainActivityViewModel;
-import com.example.myapplication.adapter.FavTrackAdapter;
-import com.example.myapplication.adapter.RecentTrackAdapter;
-import com.example.myapplication.adapter.TrackAdapter;
-import com.example.myapplication.model.Track;
-import com.example.myapplication.service.MediaPlayerService;
+import com.example.Dive.viewmodel.MainActivityViewModel;
+import com.example.Dive.adapter.FavTrackAdapter;
+import com.example.Dive.adapter.RecentTrackAdapter;
+import com.example.Dive.adapter.TrackAdapter;
+import com.example.Dive.model.Track;
+import com.example.Dive.service.MediaPlayerService;
 import java.util.ArrayList;
 import java.util.Objects;
-import static com.example.myapplication.App.NOTIF_CHANNEL_ID;
-import static com.example.myapplication.service.MediaPlayerService.player;
+
+import static com.example.Dive.service.MediaPlayerService.player;
 
 public class MainActivity extends AppCompatActivity {
 

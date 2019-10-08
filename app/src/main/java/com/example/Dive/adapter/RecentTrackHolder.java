@@ -1,10 +1,10 @@
-package com.example.myapplication.adapter;
+package com.example.Dive.adapter;
 
 import android.view.View;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.myapplication.R;
+import com.example.Dive.R;
 
 public class RecentTrackHolder extends RecyclerView.ViewHolder {
 

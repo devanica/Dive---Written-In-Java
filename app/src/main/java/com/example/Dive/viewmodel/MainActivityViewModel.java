@@ -1,24 +1,15 @@
-package com.example.myapplication.viewmodel;
+package com.example.Dive.viewmodel;
 
-import android.annotation.SuppressLint;
 import android.app.Application;
-import android.content.ContentResolver;
-import android.content.Context;
-import android.database.Cursor;
 import android.graphics.drawable.Drawable;
-import android.provider.MediaStore;
-import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import com.example.myapplication.model.Track;
-import com.example.myapplication.room.DatabaseRepository;
+import com.example.Dive.model.Track;
+import com.example.Dive.room.DatabaseRepository;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class MainActivityViewModel extends AndroidViewModel {
 

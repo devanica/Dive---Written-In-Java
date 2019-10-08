@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.Dive;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.Manifest;

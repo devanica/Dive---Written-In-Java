@@ -1,12 +1,11 @@
-package com.example.myapplication.room;
+package com.example.Dive.room;
 
 import android.app.Application;
-import android.content.Context;
 
 import androidx.lifecycle.LiveData;
 
-import com.example.myapplication.events.TrackEvent;
-import com.example.myapplication.model.Track;
+import com.example.Dive.events.TrackEvent;
+import com.example.Dive.model.Track;
 import org.greenrobot.eventbus.EventBus;
 import java.util.List;
 import java.util.concurrent.Executors;

@@ -1,4 +1,4 @@
-package com.example.myapplication.room;
+package com.example.Dive.room;
 
 
 import android.content.Context;
@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
-import com.example.myapplication.model.Track;
+import com.example.Dive.model.Track;
 
 // Here we are telling database what are our entities.
 @androidx.room.Database(entities = Track.class, version = 1, exportSchema = false)

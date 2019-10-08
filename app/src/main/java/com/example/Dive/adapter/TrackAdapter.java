@@ -1,4 +1,4 @@
-package com.example.myapplication.adapter;
+package com.example.Dive.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,8 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.myapplication.R;
-import com.example.myapplication.model.Track;
+import com.example.Dive.R;
+import com.example.Dive.model.Track;
 import java.util.ArrayList;
 
 public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackHolder> {
