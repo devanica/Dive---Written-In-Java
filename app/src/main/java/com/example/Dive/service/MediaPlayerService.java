@@ -14,7 +14,6 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-
 import com.example.Dive.MainActivity;
 import com.example.Dive.NotificationReceiver;
 import com.example.Dive.R;
@@ -64,7 +63,6 @@ public class MediaPlayerService extends Service implements
     }
 
     private void triggerNotificationChannelOne(Track track){
-        // here find strings from track info to be set in notification instead of title and content
         Intent intent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 

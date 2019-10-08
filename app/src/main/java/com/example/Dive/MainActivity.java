@@ -27,7 +27,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.example.Dive.viewmodel.MainActivityViewModel;
 import com.example.Dive.adapter.FavTrackAdapter;
-import com.example.Dive.adapter.RecentTrackAdapter;
 import com.example.Dive.adapter.TrackAdapter;
 import com.example.Dive.model.Track;
 import com.example.Dive.service.MediaPlayerService;
@@ -38,16 +37,14 @@ import static com.example.Dive.service.MediaPlayerService.player;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ArrayList<Track> recentList = new ArrayList<>();
     private ArrayList<Track> trackList = new ArrayList<>();
 
-    private RecentTrackAdapter recentTrackAdapter;
     private TrackAdapter trackAdapter;
     private FavTrackAdapter favTrackAdapter;
 
     private MainActivityViewModel mainActivityViewModel;
     private RecyclerView trackRecycler, favoriteRecycler;
-    private TextView favTitle, artistName, trackName, trackDuration;
+    private TextView artistName, trackName, trackDuration;
 
     private ImageView btnPlay, btnNext, btnPrev;
     private Connection connection;
@@ -65,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
         favoriteRecycler = findViewById(R.id.recycler_favorite);
         trackRecycler = findViewById(R.id.recycler_tracks);
 
-        favTitle = findViewById(R.id.title_favorite);
         artistName = findViewById(R.id.artist_name);
         trackName = findViewById(R.id.track_name);
         trackDuration = findViewById(R.id.track_duration);
@@ -82,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
 
         mainActivityViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
         mainActivityViewModel.getFavTracks().observe(this, tracks -> {
-            // TODO: Update recyclerview
             favTrackAdapter.setFavTracks(tracks);
             checkIfFavEmpty();
         });
@@ -113,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Adapter for trackList/filteredList.
+        // Adapter for trackList
         getTracksFromStorage();
         trackRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         trackAdapter = new TrackAdapter(getApplicationContext(), trackList);
@@ -234,8 +229,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Our handler for received Intents. This will be called whenever an Intent
-    // with an action named "sent_track" is broadcasted.
     private BroadcastReceiver onCloseApp = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -334,5 +327,4 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         unbindService(connection);
     }
-
 }
