@@ -13,7 +13,6 @@ public class NotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         player.stop();
-
         LocalBroadcastManager.getInstance(context).sendBroadcast(closeIntent);
     }
 }

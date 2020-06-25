@@ -58,7 +58,6 @@ public class MediaPlayerService extends Service implements
         assert track != null;
         playTrack(track.getId(), getApplicationContext());
         triggerNotificationChannelOne(track);
-        Log.v("player","start");
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -127,5 +126,4 @@ public class MediaPlayerService extends Service implements
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
     }
-
 }
