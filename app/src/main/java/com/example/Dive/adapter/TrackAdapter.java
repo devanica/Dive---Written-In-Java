@@ -15,7 +15,6 @@ import com.example.Dive.model.Track;
 import java.util.ArrayList;
 
 public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackHolder> {
-
     private Context mContext;
     private ArrayList<Track> listOfTracks;
     private onTrackSelectListener onTrackSelectListener;
@@ -38,16 +37,13 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackHolder>
     @NonNull
     @Override
     public TrackHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.track, parent, false);
-        return new TrackHolder(view);
+        return new TrackHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.track, parent, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull TrackHolder holder, int position) {
-        Track track = listOfTracks.get(position);
-
-        holder.trackName.setText(track.getTrackName());
-        holder.artistName.setText(track.getArtistName());
+        holder.trackName.setText(listOfTracks.get(position).getTrackName());
+        holder.artistName.setText(listOfTracks.get(position).getArtistName());
         holder.addToFavButton.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_add));
     }
 
@@ -57,12 +53,11 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackHolder>
     }
 
     class TrackHolder extends RecyclerView.ViewHolder {
-
         TextView trackName, artistName;
         LinearLayout trackContainer;
         ImageView addToFavButton, deleteButton;
 
-        public TrackHolder(@NonNull View itemView) {
+        TrackHolder(@NonNull View itemView) {
             super(itemView);
             trackName = itemView.findViewById(R.id.track_name);
             artistName = itemView.findViewById(R.id.artist_name);

@@ -28,8 +28,6 @@ public class MediaPlayerService extends Service implements
         MediaPlayer.OnErrorListener {
 
     public static MediaPlayer player;
-    private Track track;
-
     private NotificationManagerCompat notificationManagerCompat;
 
     @Nullable
@@ -54,7 +52,7 @@ public class MediaPlayerService extends Service implements
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        track = intent.getParcelableExtra("track");
+        Track track = intent.getParcelableExtra("track");
         assert track != null;
         playTrack(track.getId(), getApplicationContext());
         triggerNotificationChannelOne(track);

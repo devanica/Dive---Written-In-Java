@@ -17,8 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FavTrackAdapter extends RecyclerView.Adapter<FavTrackAdapter.FavTrackHolder> {
-
-    private Context context;
     private List<Track> tracks = new ArrayList<>();
     private OnFavTrackSelectListener onFavTrackSelectListener;
 
@@ -34,8 +32,7 @@ public class FavTrackAdapter extends RecyclerView.Adapter<FavTrackAdapter.FavTra
     @NonNull
     @Override
     public FavTrackHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        @SuppressLint("InflateParams") View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.favorite_track, null);
-        return new FavTrackHolder(layoutView);
+        return new FavTrackHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.favorite_track, parent, false));
     }
 
     @Override
@@ -55,12 +52,11 @@ public class FavTrackAdapter extends RecyclerView.Adapter<FavTrackAdapter.FavTra
     }
 
     class FavTrackHolder extends RecyclerView.ViewHolder {
-
         TextView recentTrackName, recentArtistName;
         ImageView deleteTrack;
         RelativeLayout favTrackContainer;
 
-        public FavTrackHolder(@NonNull View itemView) {
+        FavTrackHolder(@NonNull View itemView) {
             super(itemView);
             recentTrackName = itemView.findViewById(R.id.recent_track_name);
             recentArtistName = itemView.findViewById(R.id.recent_artist_name);

@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.concurrent.Executors;
 
 public class DatabaseRepository {
-
     private Dao dao;
     private LiveData<List<Track>> favTracks;
     private Track track;

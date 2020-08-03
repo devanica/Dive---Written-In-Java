@@ -3,23 +3,16 @@ package com.example.Dive;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentUris;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageView;
@@ -36,19 +29,16 @@ import java.util.Objects;
 import static com.example.Dive.service.MediaPlayerService.player;
 
 public class MainActivity extends AppCompatActivity {
-
     private ArrayList<Track> trackList = new ArrayList<>();
 
     private TrackAdapter trackAdapter;
     private FavTrackAdapter favTrackAdapter;
 
     private MainActivityViewModel mainActivityViewModel;
-    private RecyclerView trackRecycler, favoriteRecycler;
+    private RecyclerView favoriteRecycler;
     private TextView artistName, trackName, trackDuration;
 
     private ImageView btnPlay, btnNext, btnPrev;
-    private Connection connection;
-    public boolean isBound = false;
     public static int currPosition, nextPosition, prevPosition;
 
     @Override
@@ -56,11 +46,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        connection = new Connection(this);
-        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(onCloseApp, new IntentFilter("close_app"));
-
         favoriteRecycler = findViewById(R.id.recycler_favorite);
-        trackRecycler = findViewById(R.id.recycler_tracks);
+        RecyclerView trackRecycler = findViewById(R.id.recycler_tracks);
 
         artistName = findViewById(R.id.artist_name);
         trackName = findViewById(R.id.track_name);
@@ -138,7 +125,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void deleteTrack(View view, int position, Track track) {
                 deleteSelectedTrack(track.getId());
-                mainActivityViewModel.deleteTrack(track);
                 trackAdapter.notifyItemRemoved(position);
             }
         });
@@ -150,8 +136,6 @@ public class MainActivity extends AppCompatActivity {
 
         btnNext.setClickable(true);
         btnPrev.setClickable(true);
-
-        bindService(new Intent(this, MediaPlayerService.class), connection, BIND_AUTO_CREATE);
 
         btnPlay.setOnClickListener(view -> {
             if(mainActivityViewModel.getTrack()==null) {
@@ -229,13 +213,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private BroadcastReceiver onCloseApp = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            stopForegroundService();
-        }
-    };
-
     private void controlTrack(){
         if(player.isPlaying()){
             player.pause();
@@ -257,30 +234,6 @@ public class MainActivity extends AppCompatActivity {
     private void stopForegroundService(){
         Intent serviceIntent = new Intent(this, MediaPlayerService.class);
         stopService(serviceIntent);
-    }
-
-    public static class Connection implements ServiceConnection {
-        Context contextReference;
-
-        public Connection(Context contextReference) {
-            this.contextReference = contextReference;
-        }
-
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            if (contextReference != null) {
-                ((MainActivity) contextReference).isBound = true;
-                Toast.makeText(contextReference, "Service Connected", Toast.LENGTH_SHORT).show();
-            }
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            if (contextReference != null) {
-                ((MainActivity) contextReference).isBound = false;
-                Toast.makeText(contextReference, "Service Disconnected", Toast.LENGTH_SHORT).show();
-            }
-        }
     }
 
     // Get tracks from storage
@@ -325,6 +278,5 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbindService(connection);
     }
 }
